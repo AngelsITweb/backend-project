@@ -33,92 +33,92 @@ enum Roles {
   Manager
 }
 
+enum OrderStatus {
+  PAYED
+  PAYMENT_CONFIRMED
+  SENT
+  DELIVERED
+  CONFIRMED
+}
+
 model User {
-  id                Int       @id @default(autoincrement())
-  nickname          String
-  username          String?
-  telegramId        Int
-  phoneNumber       String?
-  createdAt         DateTime  @default(now())
-  role              Roles     @default(User)
-  cars              Car[]
-  ordersAsSeller    Order[]   @relation("ordersAsSeller")
-  ordersAsBuyer     Order[]   @relation("ordersAsBuyer")
-  requests          Request[]
+  id             Int       @id @default(autoincrement())
+  nickname       String
+  username       String?
+  telegramId     BigInt
+  phoneNumber    String?
+  createdAt      DateTime  @default(now())
+  role           Roles     @default(User)
+  cars           Car[]
+  ordersAsSeller Order[]   @relation("ordersAsSeller")
+  ordersAsBuyer  Order[]   @relation("ordersAsBuyer")
+  requests       Request[]
+  notifications  Brands[]
+  carts          Cart[]
+  partsForSale   Part[]    @relation("partsForSale")
 }
 
 model Car {
-  id                Int      @id @default(autoincrement())
-  name              String
-  image             String
-  brand             Brands
-  model             String
-  number            String
-  ownerId           Int
-  owner             User     @relation(fields: [ownerId], references: [id])
-  requests          Request[]
+  id       Int       @id @default(autoincrement())
+  image    String
+  brand    Brands
+  model    String
+  number   String
+  ownerId  Int
+  owner    User      @relation(fields: [ownerId], references: [id])
+  requests Request[]
+  parts    Part[]
 }
 
 model Part {
-  id                Int      @id @default(autoincrement())
-  name              String
-  manufacturer      String
-  state             String
-  number            String
-  image             String
-  isSold            Boolean  @default(false)
-  carId             Int
-  carts             CartPart[]
-  requests          Request[]
+  id           Int       @id @default(autoincrement())
+  manufacturer String
+  state        String
+  numberOrName String
+  price        Float
+  image        String?
+  cartId       Int?
+  cart         Cart?     @relation(fields: [cartId], references: [id])
+  sellerId     Int
+  seller       User      @relation("partsForSale", fields: [sellerId], references: [id])
+  carId        Int
+  car          Car       @relation(fields: [carId], references: [id])
 }
 
 model Cart {
-  id                Int        @id @default(autoincrement())
-  parts             CartPart[]
-  price             Float
-  count             Int
-  active            Boolean
-  orders            Order[]
-}
-
-model CartPart {
-  cart              Cart @relation(fields: [cartId], references: [id])
-  cartId            Int
-  part              Part @relation(fields: [partId], references: [id])
-  partId            Int
-
-  @@id([partId, cartId])
+  id     Int     @id @default(autoincrement())
+  parts  Part[]
+  price  Float?
+  count  Int?
+  orders Order[]
+  userId Int
+  user   User    @relation(fields: [userId], references: [id])
 }
 
 model Order {
-  id                   Int      @id @default(autoincrement())
-  seller               User     @relation("ordersAsSeller", fields: [sellerId], references: [id])
-  sellerId             Int
-  buyer                User     @relation("ordersAsBuyer", fields: [buyerId], references: [id])
-  buyerId              Int
-  price                Float
-  isActive             Boolean  @default(true)
-  isPayed              Boolean  @default(false)
-  isPaymentConfirmed   Boolean  @default(false)
-  isSent               Boolean  @default(false)
-  isDelivered          Boolean  @default(false)
-  isConfirmed          Boolean  @default(false)
-  deliveryDate         DateTime?
-  sentDate             DateTime?
-  paymentScreenshot    String?
-  cart                 Cart?    @relation(fields: [cartId], references: [id])
-  cartId               Int?
+  id                Int         @id @default(autoincrement())
+  seller            User        @relation("ordersAsSeller", fields: [sellerId], references: [id])
+  sellerId          Int
+  buyer             User        @relation("ordersAsBuyer", fields: [buyerId], references: [id])
+  buyerId           Int
+  price             Float
+  status            OrderStatus @default(PAYED)
+  deliveryDate      DateTime?
+  sentDate          DateTime?
+  paymentScreenshot String?
+  cart              Cart?       @relation(fields: [cartId], references: [id])
+  cartId            Int?
 }
 
 model Request {
-  id                 Int     @id @default(autoincrement())
-  car                Car     @relation(fields: [carId], references: [id])
-  carId              Int
-  part               Part    @relation(fields: [partId], references: [id])
-  partId             Int
-  user               User    @relation(fields: [userId], references: [id])
-  userId             Int
+  id     Int     @id @default(autoincrement())
+  name   String
+  image  String?
+  car    Car     @relation(fields: [carId], references: [id])
+  carId  Int
+  partId Int?
+  user   User    @relation(fields: [userId], references: [id])
+  userId Int
 
   @@index([carId, partId, userId], name: "unique_request")
 }
-

@@ -1,21 +1,23 @@
-import { Module } from '@nestjs/common';
-import { TelegrafModule } from 'nestjs-telegraf';
-import { AppController } from './app.controller';
+import {MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
 import { UsersModule } from './users/users.module';
-import * as LocalSession from 'telegraf-session-local';
 import { PrismaService } from '../prisma/prisma.service';
-
-const session = new LocalSession({ database: 'session.db.json' });
+import {UsersController} from "./users/users.controller";
+import { CarsModule } from './cars/cars.module';
+import { RequestModule } from './requests/requests.module';
+import { CartModule } from './cart/cart.module';
+import { PartModule } from './part/part.module';
+import { OrdersModule } from './orders/orders.module';
+import {AddUserIdMiddleware} from "./middlewares/TelegramIdToUserId";
 
 @Module({
-    providers: [AppController, PrismaService],
-    controllers: [],
-    imports: [
-        TelegrafModule.forRoot({
-            middlewares: [session.middleware()],
-            token: '7045135748:AAF8RXjROq9mlRCeOyYmqA-0wKhznjIjoug'
-        }),
-        UsersModule
-    ],
+    providers: [PrismaService],
+    controllers: [UsersController],
+    imports: [UsersModule, CarsModule, RequestModule, CartModule, PartModule, OrdersModule],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer
+            .apply(AddUserIdMiddleware)
+            .forRoutes('*');
+    }
+}
