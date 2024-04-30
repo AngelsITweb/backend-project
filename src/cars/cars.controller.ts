@@ -1,6 +1,7 @@
-import {Body, Controller, Delete, Get, Post, Headers, Param} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Post, Headers, Param, UseInterceptors, UploadedFile} from '@nestjs/common';
 import {CarsService} from "./cars.service";
 import {Brands} from "@prisma/client";
+import {FileInterceptor} from "@nestjs/platform-express";
 
 @Controller('cars')
 export class CarsController {
@@ -12,21 +13,24 @@ export class CarsController {
         return await this.carsService.getAll(parsedUserId);
     }
 
-    @Post('createCar')
-    async createCar(@Body() body: any, @Headers('user-id') userId: string): Promise<any> {
+    @Post('')
+    async createCar(
+        @Body() body: any,
+        @Headers('user-id') userId: string
+    ): Promise<any> {
         const parsedUserId = parseInt(userId, 10);
 
-        if (!body || !body.brand || !body.model || !body.number || !body.image) {
+        if (!body || !body.brand || !body.model || !body.number) {
             throw new Error('Не все обязательные поля были переданы');
         }
 
-        const { brand, model, number, image } = body;
+        const { image, brand, model, number } = body;
 
         if (!Object.values(Brands).includes(brand as Brands)) {
             throw new Error('Неверное значение бренда');
         }
 
-        return await this.carsService.createCar({ ownerId: parsedUserId, brand, model, number, image });
+        return this.carsService.createCar({ ownerId: parsedUserId, brand, model, number, image });
     }
 
     @Get(':id')

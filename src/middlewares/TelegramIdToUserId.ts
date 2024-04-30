@@ -11,14 +11,24 @@ export class AddUserIdMiddleware implements NestMiddleware {
             const telegramId = req.headers['telegram-id'];
 
             if (!telegramId) {
-                return res.status(400).json({ error: 'Telegram ID not provided in headers' });
+                // return res.status(408).json({ error: 'Telegram ID not provided in headers' });
+            }
+
+            const url = req.originalUrl;
+
+            const isImageRequest = url.startsWith('/api/uploads');
+            const isRegistration = url.startsWith('/api/users');
+
+            if (isImageRequest || isRegistration) {
+                return next();
             }
 
             const user = await this.prisma.user.findFirst({
                 where: {
-                    telegramId: parseInt(telegramId as string), // Парсим Telegram ID в число, если это строка
+                    telegramId: parseInt(telegramId as string),
                 },
             });
+
 
             if (!user) {
                 return res.status(404).json({ error: 'User not found' });
