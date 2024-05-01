@@ -73,9 +73,11 @@ model Car {
 model Part {
   id           Int       @id @default(autoincrement())
   manufacturer String
-  state        String
   numberOrName String
   price        Float
+  new          Boolean
+  original     Boolean
+  name         String
   image        String?
   cartId       Int?
   cart         Cart?     @relation(fields: [cartId], references: [id])
@@ -83,7 +85,8 @@ model Part {
   seller       User      @relation("partsForSale", fields: [sellerId], references: [id])
   carId        Int
   car          Car       @relation(fields: [carId], references: [id])
-  requests     Request[]
+  request      Request?   @relation(fields: [requestId], references: [id])
+  requestId    Int
 }
 
 model Cart {

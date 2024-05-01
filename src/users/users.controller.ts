@@ -1,4 +1,4 @@
-import {Controller, Post, Body, Get, Logger} from '@nestjs/common';
+import {Controller, Post, Body, Get, Logger, Headers} from '@nestjs/common';
 import { UsersService } from "./users.service";
 
 @Controller('/users')
@@ -17,14 +17,18 @@ export class UsersController {
     }
 
     @Post('setRole')
-    async setRole(@Body() body: { telegramId: string, role: string }): Promise<any> {
-        const { telegramId, role } = body;
-        return await this.usersService.setRole(telegramId, role);
+    async setRole(@Body() body: { role: string }, @Headers('user-id') userId: string): Promise<any> {
+        const { role } = body;
+        const parsedUserId = parseInt(userId, 10);
+        return await this.usersService.setRole(userId, role);
     }
 
     @Post('setNotifications')
-    async setNotifications(@Body() body: { telegramId: string, brandsString: string }): Promise<any> {
-        const { telegramId, brandsString } = body;
-        return await this.usersService.setNotifications(telegramId, brandsString);
+    async setNotifications(@Headers('user-id') userId: string, @Body() body: { brandsString: string }): Promise<any> {
+        console.log(userId)
+        const parsedUserId = parseInt(userId, 10);
+        console.log(parsedUserId)
+        return await this.usersService.setNotifications(parsedUserId, body.brandsString);
     }
+
 }

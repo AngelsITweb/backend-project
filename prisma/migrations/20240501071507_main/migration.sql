@@ -4,15 +4,19 @@ CREATE TYPE "Brands" AS ENUM ('KIA', 'BMW', 'Hyundai', 'Chevrolet', 'Cherry', 'B
 -- CreateEnum
 CREATE TYPE "Roles" AS ENUM ('Admin', 'User', 'Seller', 'Manager');
 
+-- CreateEnum
+CREATE TYPE "OrderStatus" AS ENUM ('PAYED', 'PAYMENT_CONFIRMED', 'SENT', 'DELIVERED', 'CONFIRMED');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "nickname" TEXT NOT NULL,
     "username" TEXT,
-    "telegramId" INTEGER NOT NULL,
+    "telegramId" BIGINT NOT NULL,
     "phoneNumber" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "role" "Roles" NOT NULL DEFAULT 'User',
+    "notifications" "Brands"[],
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -20,7 +24,6 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Car" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
     "image" TEXT NOT NULL,
     "brand" "Brands" NOT NULL,
     "model" TEXT NOT NULL,
@@ -33,12 +36,16 @@ CREATE TABLE "Car" (
 -- CreateTable
 CREATE TABLE "Part" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
     "manufacturer" TEXT NOT NULL,
     "state" TEXT NOT NULL,
-    "number" TEXT NOT NULL,
-    "image" TEXT NOT NULL,
-    "isSold" BOOLEAN NOT NULL DEFAULT false,
+    "numberOrName" TEXT NOT NULL,
+    "price" DOUBLE PRECISION NOT NULL,
+    "new" BOOLEAN NOT NULL,
+    "original" BOOLEAN NOT NULL,
+    "name" TEXT NOT NULL,
+    "image" TEXT,
+    "cartId" INTEGER,
+    "sellerId" INTEGER NOT NULL,
     "carId" INTEGER NOT NULL,
 
     CONSTRAINT "Part_pkey" PRIMARY KEY ("id")
@@ -47,19 +54,11 @@ CREATE TABLE "Part" (
 -- CreateTable
 CREATE TABLE "Cart" (
     "id" SERIAL NOT NULL,
-    "price" DOUBLE PRECISION NOT NULL,
-    "count" INTEGER NOT NULL,
-    "active" BOOLEAN NOT NULL,
+    "price" DOUBLE PRECISION,
+    "count" INTEGER,
+    "userId" INTEGER NOT NULL,
 
     CONSTRAINT "Cart_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "CartPart" (
-    "cartId" INTEGER NOT NULL,
-    "partId" INTEGER NOT NULL,
-
-    CONSTRAINT "CartPart_pkey" PRIMARY KEY ("partId","cartId")
 );
 
 -- CreateTable
@@ -68,12 +67,7 @@ CREATE TABLE "Order" (
     "sellerId" INTEGER NOT NULL,
     "buyerId" INTEGER NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "isPayed" BOOLEAN NOT NULL DEFAULT false,
-    "isPaymentConfirmed" BOOLEAN NOT NULL DEFAULT false,
-    "isSent" BOOLEAN NOT NULL DEFAULT false,
-    "isDelivered" BOOLEAN NOT NULL DEFAULT false,
-    "isConfirmed" BOOLEAN NOT NULL DEFAULT false,
+    "status" "OrderStatus" NOT NULL DEFAULT 'PAYED',
     "deliveryDate" TIMESTAMP(3),
     "sentDate" TIMESTAMP(3),
     "paymentScreenshot" TEXT,
@@ -85,24 +79,46 @@ CREATE TABLE "Order" (
 -- CreateTable
 CREATE TABLE "Request" (
     "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "image" TEXT,
     "carId" INTEGER NOT NULL,
-    "partId" INTEGER NOT NULL,
     "userId" INTEGER NOT NULL,
 
     CONSTRAINT "Request_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "_PartToRequest" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
 -- CreateIndex
-CREATE INDEX "unique_request" ON "Request"("carId", "partId", "userId");
+CREATE UNIQUE INDEX "Cart_userId_key" ON "Cart"("userId");
+
+-- CreateIndex
+CREATE INDEX "unique_request" ON "Request"("carId", "userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_PartToRequest_AB_unique" ON "_PartToRequest"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_PartToRequest_B_index" ON "_PartToRequest"("B");
 
 -- AddForeignKey
-ALTER TABLE "Car" ADD CONSTRAINT "Car_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Car" ADD CONSTRAINT "Car_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CartPart" ADD CONSTRAINT "CartPart_cartId_fkey" FOREIGN KEY ("cartId") REFERENCES "Cart"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Part" ADD CONSTRAINT "Part_cartId_fkey" FOREIGN KEY ("cartId") REFERENCES "Cart"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CartPart" ADD CONSTRAINT "CartPart_partId_fkey" FOREIGN KEY ("partId") REFERENCES "Part"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Part" ADD CONSTRAINT "Part_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Part" ADD CONSTRAINT "Part_carId_fkey" FOREIGN KEY ("carId") REFERENCES "Car"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Cart" ADD CONSTRAINT "Cart_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -117,7 +133,10 @@ ALTER TABLE "Order" ADD CONSTRAINT "Order_cartId_fkey" FOREIGN KEY ("cartId") RE
 ALTER TABLE "Request" ADD CONSTRAINT "Request_carId_fkey" FOREIGN KEY ("carId") REFERENCES "Car"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Request" ADD CONSTRAINT "Request_partId_fkey" FOREIGN KEY ("partId") REFERENCES "Part"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Request" ADD CONSTRAINT "Request_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Request" ADD CONSTRAINT "Request_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "_PartToRequest" ADD CONSTRAINT "_PartToRequest_A_fkey" FOREIGN KEY ("A") REFERENCES "Part"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PartToRequest" ADD CONSTRAINT "_PartToRequest_B_fkey" FOREIGN KEY ("B") REFERENCES "Request"("id") ON DELETE CASCADE ON UPDATE CASCADE;

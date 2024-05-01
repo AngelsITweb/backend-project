@@ -17,9 +17,9 @@ export class AddUserIdMiddleware implements NestMiddleware {
             const url = req.originalUrl;
 
             const isImageRequest = url.startsWith('/api/uploads');
-            const isRegistration = url.startsWith('/api/users');
+            // const isRegistration = url.startsWith('/api/users');
 
-            if (isImageRequest || isRegistration) {
+            if (isImageRequest) {
                 return next();
             }
 

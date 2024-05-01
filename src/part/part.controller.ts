@@ -17,6 +17,6 @@ export class PartController {
 
     @Post('')
     async createPart(@Body() body: any) {
-        return this.partService.createPart(body.manufacturer, body.state, body.numberOrName, body.price, body.image, body.sellerId, body.carId)
+        return this.partService.createPart(body.name, body.new, body.original, body.manufacturer, body.state, body.numberOrName, body.price, body.image, body.sellerId, body.carId)
     }
 }

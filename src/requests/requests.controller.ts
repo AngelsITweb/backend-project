@@ -13,12 +13,13 @@ export class RequestController {
         return this.requestsService.getAll(parsedId);
     }
 
-    @Get(':id')
-    getById(@Param('id') id: number) {
-        return this.requestsService.getById(id);
+    @Get('/id/:id')
+    getById(@Param('id') id: string) {
+        const parsedId = parseInt(id, 10);
+        return this.requestsService.getById(parsedId);
     }
 
-    @Post()
+    @Post('')
     async createRequest(
         @Body() body: any,
         @Headers('user-id') userId: string
@@ -27,5 +28,11 @@ export class RequestController {
         const { carId, name, image }: { carId: string; name: string, image: string } = body;
         const parsedCarId = parseInt(carId, 10);
         return this.requestsService.createRequest({ userId: parsedUserId, carId: parsedCarId, name, image });
+    }
+
+    @Get('/notifications')
+    getByNotifications(@Headers('user-id') userId: string) {
+        const parsedUserId = parseInt(userId, 10);
+        return this.requestsService.getByCarNotifications(parsedUserId);
     }
 }
