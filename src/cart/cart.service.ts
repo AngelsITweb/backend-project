@@ -11,45 +11,70 @@ export class CartService {
             where: {
                 userId: parsedUserId
             },
+            include: {
+                parts: true
+            }
         });
     }
 21
     async getById(id: number) {
-        return this.prisma.cart.findUnique({
+        return this.prisma.cart.findFirst({
             where: {
                 id,
             },
-        });
-    }
-
-    async createCart(userId: number, partIds: number[]) {
-        const parts = await this.prisma.part.findMany({
-            where: {
-                id: {
-                    in: partIds,
-                },
-            },
-        });
-
-        const totalPrice = parts.reduce((total, part) => total + part.price, 0);
-        const totalCount = parts.length;
-
-        const cart = await this.prisma.cart.create({
-            data: {
-                userId,
-                price: totalPrice,
-                count: totalCount,
-                parts: {
-                    connect: parts.map(part => ({ id: part.id })),
-                },
-            },
             include: {
-                parts: true,
-            },
+                parts: true
+            }
+        });
+    }
+
+    async createCart(userId: number, partId: number) {
+        const existingCart = await this.prisma.cart.findFirst({
+            where: { userId },
         });
 
-        return cart;
+        if (existingCart) {
+            const cart = await this.prisma.cart.update({
+                where: { id: existingCart.id },
+                data: {
+                    parts: {
+                        connect: { id: partId },
+                    },
+                    count: { increment: 1 }, // Увеличиваем счетчик на 1
+                    price: { increment: (await this.prisma.part.findUnique({ where: { id: partId } })).price },
+                },
+                include: {
+                    parts: true,
+                },
+            });
+            return cart;
+        } else {
+            const part = await this.prisma.part.findUnique({
+                where: { id: partId },
+            });
+
+            if (!part) {
+                throw new Error('Деталь не найдена');
+            }
+
+            const cart = await this.prisma.cart.create({
+                data: {
+                    userId,
+                    price: part.price,
+                    count: 1,
+                    parts: {
+                        connect: { id: partId },
+                    },
+                },
+                include: {
+                    parts: true,
+                },
+            });
+            return cart;
+        }
     }
+
+
 
     async deleteCart(id: number) {
         return this.prisma.cart.delete({

@@ -11,13 +11,14 @@ export class CartController {
     }
 
     @Get(':id')
-    getById(@Param() id: number) {
-        return this.cartService.getById(id)
+    getById(@Param('id') id: string) {
+        const cartId = parseInt(id, 10);
+        return this.cartService.getById(cartId);
     }
 
-    @Post('create')
+    @Post('')
     createCart(@Body() body: any, @Headers('user-id') userId: string) {
         const parsedUserId = parseInt(userId, 10);
-        return this.cartService.createCart(parsedUserId, body.partsId);
+        return this.cartService.createCart(parsedUserId, body.partId);
     }
 }

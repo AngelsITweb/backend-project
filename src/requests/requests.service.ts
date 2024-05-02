@@ -43,6 +43,7 @@ export class RequestService {
 
     async getByCarNotifications(userId: number) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        console.log(user.notifications)
         const brands = user.notifications;
 
         const requestsPromises = brands.map(async (brand) => {

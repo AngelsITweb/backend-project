@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {PrismaService} from "../../prisma/prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class OrdersService {
@@ -12,6 +12,13 @@ export class OrdersService {
                     { buyerId: id },
                     { sellerId: id }
                 ]
+            },
+            include: {
+                cart: {
+                    include: {
+                        parts: true
+                    }
+                }
             }
         });
     }
@@ -20,25 +27,88 @@ export class OrdersService {
         return this.prisma.order.findUnique({
             where: {
                 id
+            },
+            include: {
+                cart: {
+                    include: {
+                        parts: true
+                    }
+                }
+            }
+        });
+    }
+
+    async updateStatus(id: number, status: string) {
+        return this.prisma.order.update({
+            where: {
+                id
+            },
+            data: {
+                status: status as any
             }
         })
     }
 
-    async createOrder(buyerId: number, sellerId: number, cartId: number) {
-        const price= await this.prisma.cart.findUnique({
+    async createOrder(buyerId: number, cartId: number, deliveryAddress: string, phoneNumber: string, screenshot: string) {
+        const cart = await this.prisma.cart.findUnique({
             where: {
                 id: cartId
             },
             select: {
-                price: true
+                price: true,
+                userId: true
             }
         });
+
+        if (!cart) {
+            throw new Error('Корзина не найдена');
+        }
+
+        const sellerId = cart.userId;
+
+        if (typeof sellerId !== 'number') {
+            throw new Error('Некорректный идентификатор продавца');
+        }
+
         return this.prisma.order.create({
             data: {
                 buyerId,
                 sellerId,
-                price: price.price,
-                cartId
+                price: cart.price,
+                cartId,
+                deliveryAddress,
+                phoneNumber,
+                paymentScreenshot: screenshot
+            },
+        });
+    }
+
+    async getPayedOrders() {
+        return this.prisma.order.findMany({
+            where: {
+                status: 'PAYED'
+            },
+            include: {
+                cart: {
+                    include: {
+                        parts: true
+                    }
+                }
+            }
+        })
+    }
+
+    async getPaymentConfirmed() {
+        return this.prisma.order.findMany({
+            where: {
+                status: 'PAYMENT_CONFIRMED'
+            },
+            include: {
+                cart: {
+                    include: {
+                        parts: true
+                    }
+                }
             }
         })
     }

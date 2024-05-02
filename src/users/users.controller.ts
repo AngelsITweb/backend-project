@@ -25,9 +25,7 @@ export class UsersController {
 
     @Post('setNotifications')
     async setNotifications(@Headers('user-id') userId: string, @Body() body: { brandsString: string }): Promise<any> {
-        console.log(userId)
         const parsedUserId = parseInt(userId, 10);
-        console.log(parsedUserId)
         return await this.usersService.setNotifications(parsedUserId, body.brandsString);
     }
 

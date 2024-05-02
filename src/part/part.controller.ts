@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Post} from '@nestjs/common';
+import {Body, Controller, Get, Headers, Post} from '@nestjs/common';
 import {PartService} from "./part.service";
 
 @Controller('part')
@@ -16,7 +16,8 @@ export class PartController {
     }
 
     @Post('')
-    async createPart(@Body() body: any) {
-        return this.partService.createPart(body.name, body.new, body.original, body.manufacturer, body.state, body.numberOrName, body.price, body.image, body.sellerId, body.carId)
+    async createPart(@Body() body: any, @Headers('user-id') userId: string) {
+        const parsedUserId = parseInt(userId, 10);  3
+        return this.partService.createPart(body.requestId, body.name, body.new, body.original, body.manufacturer, body.numberOrName, body.price, body.image, parsedUserId, body.carId)
     }
 }
