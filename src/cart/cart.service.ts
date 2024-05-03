@@ -31,23 +31,30 @@ export class CartService {
     async createCart(userId: number, partId: number) {
         const existingCart = await this.prisma.cart.findFirst({
             where: { userId },
+            include: { parts: true }, // Включаем связанные детали
         });
 
         if (existingCart) {
-            const cart = await this.prisma.cart.update({
-                where: { id: existingCart.id },
-                data: {
-                    parts: {
-                        connect: { id: partId },
+            const partAlreadyInCart = existingCart.parts.some(part => part.id === partId);
+
+            if (partAlreadyInCart) {
+                return existingCart;
+            } else {
+                const cart = await this.prisma.cart.update({
+                    where: { id: existingCart.id },
+                    data: {
+                        parts: {
+                            connect: { id: partId },
+                        },
+                        count: { increment: 1 },
+                        price: { increment: (await this.prisma.part.findUnique({ where: { id: partId } })).price },
                     },
-                    count: { increment: 1 }, // Увеличиваем счетчик на 1
-                    price: { increment: (await this.prisma.part.findUnique({ where: { id: partId } })).price },
-                },
-                include: {
-                    parts: true,
-                },
-            });
-            return cart;
+                    include: {
+                        parts: true,
+                    },
+                });
+                return cart;
+            }
         } else {
             const part = await this.prisma.part.findUnique({
                 where: { id: partId },
@@ -73,6 +80,8 @@ export class CartService {
             return cart;
         }
     }
+
+
 
 
 

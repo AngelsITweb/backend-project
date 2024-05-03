@@ -74,7 +74,7 @@ export class OrdersService {
             data: {
                 buyerId,
                 sellerId,
-                price: cart.price,
+                price: cart.price * 1.05,
                 cartId,
                 deliveryAddress,
                 phoneNumber,
