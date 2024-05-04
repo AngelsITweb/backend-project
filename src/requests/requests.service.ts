@@ -10,13 +10,21 @@ export class RequestService {
     async getAll(id: number) {
         return this.prisma.request.findMany({
             where: {
-                carId: id
+                carId: id,
+                parts: {
+                    none: {
+                        cartId: {
+                            not: null
+                        }
+                    }
+                }
             },
             include: {
                 parts: true
             }
         });
     }
+
 
     async getById(id: number) {
         return this.prisma.request.findUnique({
