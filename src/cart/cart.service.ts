@@ -7,15 +7,31 @@ export class CartService {
 
     async getAll(userId: string) {
         const parsedUserId = parseInt(userId, 10);
-        return this.prisma.cart.findMany({
-            where: {
-                userId: parsedUserId
-            },
-            include: {
-                parts: true
-            }
+      
+        const orders = await this.prisma.order.findMany({
+          where: {
+            buyerId: parsedUserId,
+          },
+          select: {
+            cartId: true,
+          },
         });
-    }
+      
+        const carts = await this.prisma.cart.findMany({
+          where: {
+            userId: parsedUserId,
+            id: {
+              notIn: orders.map((order) => order.cartId),
+            },
+          },
+          include: {
+            parts: true,
+          },
+        });
+      
+        return carts;
+      }
+      
 21
     async getById(id: number) {
         return this.prisma.cart.findFirst({
