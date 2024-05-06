@@ -20,7 +20,13 @@ let AddUserIdMiddleware = class AddUserIdMiddleware {
         try {
             const telegramId = req.headers['telegram-id'];
             if (!telegramId) {
-                return res.status(400).json({ error: 'Telegram ID not provided in headers' });
+            }
+            const url = req.originalUrl;
+            const isImageRequest = url.startsWith('/api/uploads');
+            const isRegistration = url.endsWith('register');
+            const isAdmin = url.includes('admin');
+            if (isImageRequest || isRegistration || isAdmin) {
+                return next();
             }
             const user = await this.prisma.user.findFirst({
                 where: {

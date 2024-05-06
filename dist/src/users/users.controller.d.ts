@@ -11,11 +11,11 @@ export declare class UsersController {
         telegramId: string;
     }): Promise<any>;
     setRole(body: {
-        telegramId: string;
         role: string;
-    }): Promise<any>;
+    }, userId: string): Promise<any>;
     setNotifications(body: {
-        telegramId: string;
         brandsString: string;
+        userId: string;
     }): Promise<any>;
+    adminGetAll(): Promise<any>;
 }

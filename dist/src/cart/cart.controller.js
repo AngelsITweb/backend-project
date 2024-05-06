@@ -23,11 +23,12 @@ let CartController = class CartController {
         return this.cartService.getAll(userId);
     }
     getById(id) {
-        return this.cartService.getById(id);
+        const cartId = parseInt(id, 10);
+        return this.cartService.getById(cartId);
     }
     createCart(body, userId) {
         const parsedUserId = parseInt(userId, 10);
-        return this.cartService.createCart(parsedUserId, body.partsId);
+        return this.cartService.createCart(parsedUserId, body.partId);
     }
 };
 exports.CartController = CartController;
@@ -40,13 +41,13 @@ __decorate([
 ], CartController.prototype, "getAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)()),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], CartController.prototype, "getById", null);
 __decorate([
-    (0, common_1.Post)('create'),
+    (0, common_1.Post)(''),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)('user-id')),
     __metadata("design:type", Function),

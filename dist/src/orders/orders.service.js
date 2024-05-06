@@ -23,6 +23,13 @@ let OrdersService = class OrdersService {
                     { buyerId: id },
                     { sellerId: id }
                 ]
+            },
+            include: {
+                cart: {
+                    include: {
+                        parts: true
+                    }
+                }
             }
         });
     }
@@ -30,24 +37,80 @@ let OrdersService = class OrdersService {
         return this.prisma.order.findUnique({
             where: {
                 id
+            },
+            include: {
+                cart: {
+                    include: {
+                        parts: true
+                    }
+                }
             }
         });
     }
-    async createOrder(buyerId, sellerId, cartId) {
-        const price = await this.prisma.cart.findUnique({
+    async updateStatus(id, status) {
+        return this.prisma.order.update({
+            where: {
+                id
+            },
+            data: {
+                status: status
+            }
+        });
+    }
+    async createOrder(buyerId, cartId, deliveryAddress, phoneNumber, screenshot) {
+        const cart = await this.prisma.cart.findUnique({
             where: {
                 id: cartId
             },
             select: {
-                price: true
+                price: true,
+                userId: true
             }
         });
+        if (!cart) {
+            throw new Error('Корзина не найдена');
+        }
+        const sellerId = cart.userId;
+        if (typeof sellerId !== 'number') {
+            throw new Error('Некорректный идентификатор продавца');
+        }
         return this.prisma.order.create({
             data: {
                 buyerId,
                 sellerId,
-                price: price.price,
-                cartId
+                price: cart.price * 1.05,
+                cartId,
+                deliveryAddress,
+                phoneNumber,
+                paymentScreenshot: screenshot
+            },
+        });
+    }
+    async getPayedOrders() {
+        return this.prisma.order.findMany({
+            where: {
+                status: 'PAYED'
+            },
+            include: {
+                cart: {
+                    include: {
+                        parts: true
+                    }
+                }
+            }
+        });
+    }
+    async getPaymentConfirmed() {
+        return this.prisma.order.findMany({
+            where: {
+                status: 'PAYMENT_CONFIRMED'
+            },
+            include: {
+                cart: {
+                    include: {
+                        parts: true
+                    }
+                }
             }
         });
     }

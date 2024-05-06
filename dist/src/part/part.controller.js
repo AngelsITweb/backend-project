@@ -25,8 +25,10 @@ let PartController = class PartController {
     async getById(body) {
         return this.partService.getById(body.id);
     }
-    async createPart(body) {
-        return this.partService.createPart(body.manufacturer, body.state, body.numberOrName, body.price, body.image, body.sellerId, body.carId);
+    async createPart(body, userId) {
+        const parsedUserId = parseInt(userId, 10);
+        3;
+        return this.partService.createPart(body.requestId, body.name, body.new, body.original, body.manufacturer, body.numberOrName, body.price, body.image, parsedUserId, body.carId);
     }
 };
 exports.PartController = PartController;
@@ -47,8 +49,9 @@ __decorate([
 __decorate([
     (0, common_1.Post)(''),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)('user-id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], PartController.prototype, "createPart", null);
 exports.PartController = PartController = __decorate([

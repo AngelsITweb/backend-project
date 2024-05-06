@@ -60,9 +60,9 @@ let UsersService = class UsersService {
         });
         return 'Роль успешно обновлена';
     }
-    async setNotifications(telegramId, brandsString) {
-        const user = await this.prisma.user.findFirst({
-            where: { telegramId: BigInt(telegramId) }
+    async setNotifications(userId, brandsString) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
         });
         if (!user) {
             return 'Пользователь не найден';
@@ -76,11 +76,15 @@ let UsersService = class UsersService {
                 return null;
             }
         }).filter(brand => brand !== null);
-        const updatedUser = await this.prisma.user.update({
+        const updatePromises = notifications.map(brand => this.prisma.user.update({
             where: { id: user.id },
-            data: { notifications: { set: notifications } }
-        });
+            data: { notifications: { push: [brand] } }
+        }));
+        await Promise.all(updatePromises);
         return 'Уведомления успешно обновлены';
+    }
+    async adminGetAll() {
+        return this.prisma.user.findMany();
     }
 };
 exports.UsersService = UsersService;

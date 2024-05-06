@@ -16,11 +16,28 @@ let RequestService = class RequestService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async getAll() {
-        return this.prisma.request.findMany();
+    async getAll(id) {
+        return this.prisma.request.findMany({
+            where: {
+                carId: id,
+                parts: {
+                    none: {
+                        cartId: {
+                            not: null
+                        }
+                    }
+                }
+            },
+            include: {
+                parts: true
+            }
+        });
     }
     async getById(id) {
-        return this.prisma.request.findUnique({ where: { id } });
+        return this.prisma.request.findUnique({
+            where: { id },
+            include: { car: true }
+        });
     }
     async createRequest({ userId, carId, name, image }) {
         const data = {
@@ -33,9 +50,25 @@ let RequestService = class RequestService {
                 connect: { id: userId }
             }
         };
-        return this.prisma.request.create({
-            data: data
+        return this.prisma.request.create({ data });
+    }
+    async getByCarNotifications(userId) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        console.log(user.notifications);
+        const brands = user.notifications;
+        const requestsPromises = brands.map(async (brand) => {
+            return this.prisma.request.findMany({
+                where: {
+                    car: {
+                        brand: brand
+                    }
+                },
+                include: {
+                    car: true
+                }
+            });
         });
+        return Promise.all(requestsPromises);
     }
 };
 exports.RequestService = RequestService;

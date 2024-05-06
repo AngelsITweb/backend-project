@@ -26,13 +26,21 @@ let UsersController = class UsersController {
         const { telegramId } = body;
         return await this.usersService.login(telegramId);
     }
-    async setRole(body) {
-        const { telegramId, role } = body;
-        return await this.usersService.setRole(telegramId, role);
+    async setRole(body, userId) {
+        const { role } = body;
+        const parsedUserId = parseInt(userId, 10);
+        return await this.usersService.setRole(userId, role);
     }
     async setNotifications(body) {
-        const { telegramId, brandsString } = body;
-        return await this.usersService.setNotifications(telegramId, brandsString);
+        const parsedUserId = parseInt(body.userId, 10);
+        return await this.usersService.setNotifications(parsedUserId, body.brandsString);
+    }
+    async adminGetAll() {
+        const users = await this.usersService.adminGetAll();
+        return users.map((user) => ({
+            ...user,
+            telegramId: user.telegramId.toString(),
+        }));
     }
 };
 exports.UsersController = UsersController;
@@ -53,17 +61,24 @@ __decorate([
 __decorate([
     (0, common_1.Post)('setRole'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)('user-id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "setRole", null);
 __decorate([
-    (0, common_1.Post)('setNotifications'),
+    (0, common_1.Post)('admin/notifications'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "setNotifications", null);
+__decorate([
+    (0, common_1.Get)('admin/all'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "adminGetAll", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('/users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

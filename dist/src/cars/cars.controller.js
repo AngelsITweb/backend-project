@@ -26,14 +26,14 @@ let CarsController = class CarsController {
     }
     async createCar(body, userId) {
         const parsedUserId = parseInt(userId, 10);
-        if (!body || !body.brand || !body.model || !body.number || !body.image) {
+        if (!body || !body.brand || !body.model || !body.number) {
             throw new Error('Не все обязательные поля были переданы');
         }
-        const { brand, model, number, image } = body;
+        const { image, brand, model, number } = body;
         if (!Object.values(client_1.Brands).includes(brand)) {
             throw new Error('Неверное значение бренда');
         }
-        return await this.carsService.createCar({ ownerId: parsedUserId, brand, model, number, image });
+        return this.carsService.createCar({ ownerId: parsedUserId, brand, model, number, image });
     }
     async getById(id) {
         return await this.carsService.getById(parseInt(id, 10));
@@ -52,7 +52,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CarsController.prototype, "getAll", null);
 __decorate([
-    (0, common_1.Post)('createCar'),
+    (0, common_1.Post)(''),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)('user-id')),
     __metadata("design:type", Function),

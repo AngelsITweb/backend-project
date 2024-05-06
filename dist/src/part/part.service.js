@@ -30,16 +30,19 @@ let PartService = class PartService {
             }
         });
     }
-    createPart(manufacturer, state, numberOrName, price, image, sellerId, carId) {
+    createPart(requestId, name, isNew, isOriginal, manufacturer, numberOrName, price, image, sellerId, carId) {
         return this.prisma.part.create({
             data: {
+                name,
+                new: isNew,
+                original: isOriginal,
                 manufacturer,
-                state,
                 numberOrName,
                 price,
                 image,
                 sellerId,
-                carId
+                carId,
+                requestId
             }
         });
     }

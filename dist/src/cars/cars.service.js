@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CarsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const client_1 = require("@prisma/client");
 let CarsService = class CarsService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -21,7 +20,7 @@ let CarsService = class CarsService {
         return this.prisma.car.findMany({
             where: {
                 ownerId: userId
-            }
+            },
         });
     }
     async getById(carId) {
@@ -32,9 +31,6 @@ let CarsService = class CarsService {
         });
     }
     async createCar({ ownerId, brand, model, number, image }) {
-        if (!Object.values(client_1.Brands).includes(brand)) {
-            throw new Error('Неверное значение бренда');
-        }
         const data = {
             ownerId,
             brand: brand,

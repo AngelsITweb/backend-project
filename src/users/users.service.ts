@@ -55,33 +55,41 @@ export class UsersService {
     }
 
     async setNotifications(userId: number, brandsString: string): Promise<any> {
+        // Find the user
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
         });
+
         if (!user) {
             return 'Пользователь не найден';
         }
 
+        // Split the brandsString to get the array of brands
         const brandsArray = brandsString.split(",").map(brand => brand.trim());
 
+        // Create a list of valid notifications (use type checking if needed)
         const notifications = brandsArray.map(brand => {
             if (Brands[brand as keyof typeof Brands]) {
                 return Brands[brand as keyof typeof Brands];
             } else {
                 return null;
             }
-        }).filter(brand => brand !== null) as Brands[];
+        }).filter(Boolean) as Brands[];
 
-        const updatePromises = notifications.map(brand =>
-            this.prisma.user.update({
-                where: { id: user.id },
-                data: { notifications: { push: [brand] } } // Обновляем только один бренд
-            })
-        );
+        await this.prisma.user.delete({
+            where: { id: user.id },
+        })
 
-        await Promise.all(updatePromises);
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: { notifications: notifications }, // overwrite existing notifications
+        });
 
         return 'Уведомления успешно обновлены';
+    }
+
+    async adminGetAll(): Promise<any> {
+        return this.prisma.user.findMany();
     }
 
 

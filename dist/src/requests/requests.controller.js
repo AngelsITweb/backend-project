@@ -19,40 +19,55 @@ let RequestController = class RequestController {
     constructor(requestsService) {
         this.requestsService = requestsService;
     }
-    getAll() {
-        return this.requestsService.getAll();
+    getAll(id) {
+        const parsedId = parseInt(id, 10);
+        return this.requestsService.getAll(parsedId);
     }
     getById(id) {
-        return this.requestsService.getById(id);
+        const parsedId = parseInt(id, 10);
+        return this.requestsService.getById(parsedId);
     }
-    createRequest(requestBody, userId) {
+    async createRequest(body, userId) {
         const parsedUserId = parseInt(userId, 10);
-        const { carId, name, image } = requestBody;
-        return this.requestsService.createRequest({ userId: parsedUserId, carId, name, image });
+        const { carId, name, image } = body;
+        const parsedCarId = parseInt(carId, 10);
+        return this.requestsService.createRequest({ userId: parsedUserId, carId: parsedCarId, name, image });
+    }
+    getByNotifications(userId) {
+        const parsedUserId = parseInt(userId, 10);
+        return this.requestsService.getByCarNotifications(parsedUserId);
     }
 };
 exports.RequestController = RequestController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)('all/:id'),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], RequestController.prototype, "getAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
+    (0, common_1.Get)('/id/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], RequestController.prototype, "getById", null);
 __decorate([
-    (0, common_1.Post)('createRequest'),
+    (0, common_1.Post)(''),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)('user-id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], RequestController.prototype, "createRequest", null);
+__decorate([
+    (0, common_1.Get)('/notifications'),
+    __param(0, (0, common_1.Headers)('user-id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], RequestController.prototype, "getByNotifications", null);
 exports.RequestController = RequestController = __decorate([
     (0, common_1.Controller)('request'),
     __metadata("design:paramtypes", [requests_service_1.RequestService])

@@ -23,10 +23,19 @@ export class UsersController {
         return await this.usersService.setRole(userId, role);
     }
 
-    @Post('setNotifications')
-    async setNotifications(@Headers('user-id') userId: string, @Body() body: { brandsString: string }): Promise<any> {
-        const parsedUserId = parseInt(userId, 10);
+    @Post('admin/notifications')
+    async setNotifications(@Body() body: { brandsString: string, userId: string }): Promise<any> {
+        const parsedUserId = parseInt(body.userId, 10);
         return await this.usersService.setNotifications(parsedUserId, body.brandsString);
     }
+
+    @Get('admin/all')
+    async adminGetAll(): Promise<any> {
+        const users = await this.usersService.adminGetAll();
+        return users.map((user) => ({
+          ...user,
+          telegramId: user.telegramId.toString(),
+        }));
+      }
 
 }

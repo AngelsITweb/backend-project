@@ -19,37 +19,71 @@ let OrdersController = class OrdersController {
     constructor(ordersService) {
         this.ordersService = ordersService;
     }
-    async getAll() {
-        return this.ordersService.getAll(1);
+    async getAll(userId) {
+        const parsedUserId = parseInt(userId, 10);
+        return this.ordersService.getAll(parsedUserId);
     }
     async getById(id) {
-        return this.ordersService.getById(id);
+        const parsedId = parseInt(id, 10);
+        return this.ordersService.getById(parsedId);
     }
-    async createOrder(body) {
-        return this.ordersService.createOrder(body.buyerId, body.sellerId, body.cartId);
+    async createOrder(userId, body) {
+        const parsedUserId = parseInt(userId, 10);
+        return this.ordersService.createOrder(body.cartId, parsedUserId, body.deliveryAddress, body.phoneNumber, body.paymentScreenshot);
+    }
+    async getPayedOrders() {
+        return this.ordersService.getPayedOrders();
+    }
+    async updateStatus(body) {
+        const parsedId = parseInt(body.id, 10);
+        return this.ordersService.updateStatus(parsedId, body.status);
+    }
+    async getPaymentConfirmed() {
+        return this.ordersService.getPaymentConfirmed();
     }
 };
 exports.OrdersController = OrdersController;
 __decorate([
     (0, common_1.Get)(''),
+    __param(0, (0, common_1.Headers)('user-id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getById", null);
 __decorate([
     (0, common_1.Post)(''),
+    __param(0, (0, common_1.Headers)('user-id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "createOrder", null);
+__decorate([
+    (0, common_1.Get)('manager/payed-orders'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "getPayedOrders", null);
+__decorate([
+    (0, common_1.Patch)('/manager/status/'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], OrdersController.prototype, "createOrder", null);
+], OrdersController.prototype, "updateStatus", null);
+__decorate([
+    (0, common_1.Get)('manager/payment-confirmed-orders'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "getPaymentConfirmed", null);
 exports.OrdersController = OrdersController = __decorate([
     (0, common_1.Controller)('orders'),
     __metadata("design:paramtypes", [orders_service_1.OrdersService])

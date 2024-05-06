@@ -5,34 +5,43 @@ export declare class PartService {
     getAll(carId: number): import(".prisma/client").Prisma.PrismaPromise<{
         id: number;
         manufacturer: string;
-        state: string;
         numberOrName: string;
         price: number;
+        new: boolean;
+        original: boolean;
+        name: string;
         image: string;
         cartId: number;
         sellerId: number;
         carId: number;
+        requestId: number;
     }[]>;
     getById(id: number): import(".prisma/client").Prisma.Prisma__PartClient<{
         id: number;
         manufacturer: string;
-        state: string;
         numberOrName: string;
         price: number;
+        new: boolean;
+        original: boolean;
+        name: string;
         image: string;
         cartId: number;
         sellerId: number;
         carId: number;
+        requestId: number;
     }, null, import("@prisma/client/runtime/library").DefaultArgs>;
-    createPart(manufacturer: string, state: string, numberOrName: string, price: number, image: string, sellerId: number, carId: number): import(".prisma/client").Prisma.Prisma__PartClient<{
+    createPart(requestId: number, name: string, isNew: boolean, isOriginal: boolean, manufacturer: string, numberOrName: string, price: number, image: string, sellerId: number, carId: number): import(".prisma/client").Prisma.Prisma__PartClient<{
         id: number;
         manufacturer: string;
-        state: string;
         numberOrName: string;
         price: number;
+        new: boolean;
+        original: boolean;
+        name: string;
         image: string;
         cartId: number;
         sellerId: number;
         carId: number;
+        requestId: number;
     }, never, import("@prisma/client/runtime/library").DefaultArgs>;
 }

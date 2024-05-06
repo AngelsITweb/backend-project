@@ -8,6 +8,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const serve_static_1 = require("@nestjs/serve-static");
+const path_1 = require("path");
 const users_module_1 = require("./users/users.module");
 const prisma_service_1 = require("../prisma/prisma.service");
 const users_controller_1 = require("./users/users.controller");
@@ -17,10 +19,13 @@ const cart_module_1 = require("./cart/cart.module");
 const part_module_1 = require("./part/part.module");
 const orders_module_1 = require("./orders/orders.module");
 const TelegramIdToUserId_1 = require("./middlewares/TelegramIdToUserId");
+const platform_express_1 = require("@nestjs/platform-express");
+const image_module_1 = require("./image/image.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
             .apply(TelegramIdToUserId_1.AddUserIdMiddleware)
+            .exclude('/uploads*')
             .forRoutes('*');
     }
 };
@@ -29,7 +34,17 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         providers: [prisma_service_1.PrismaService],
         controllers: [users_controller_1.UsersController],
-        imports: [users_module_1.UsersModule, cars_module_1.CarsModule, requests_module_1.RequestModule, cart_module_1.CartModule, part_module_1.PartModule, orders_module_1.OrdersModule],
+        imports: [
+            users_module_1.UsersModule, cars_module_1.CarsModule, requests_module_1.RequestModule, cart_module_1.CartModule, part_module_1.PartModule, orders_module_1.OrdersModule,
+            platform_express_1.MulterModule.register({
+                dest: './uploads',
+            }),
+            serve_static_1.ServeStaticModule.forRoot({
+                rootPath: (0, path_1.join)(__dirname, '..', '..', 'uploads'),
+                serveRoot: '/uploads',
+            }),
+            image_module_1.ImageModule
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map
