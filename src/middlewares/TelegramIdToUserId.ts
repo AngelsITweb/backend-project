@@ -11,13 +11,13 @@ export class AddUserIdMiddleware implements NestMiddleware {
             const telegramId = req.headers['telegram-id'];
 
             if (!telegramId) {
-                // return res.status(408).json({ error: 'Telegram ID not provided in headers' });
+                return res.status(408).json({ error: 'Telegram ID not provided in headers' });
             }
 
             const url = req.originalUrl;
 
             const isImageRequest = url.startsWith('/api/uploads');
-            const isRegistration = url.endsWith('register');
+            const isRegistration = url.includes('register');
             const isAdmin = url.includes('admin');
 
             if (isImageRequest || isRegistration || isAdmin) {
