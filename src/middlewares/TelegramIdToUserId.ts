@@ -25,9 +25,9 @@ export class AddUserIdMiddleware implements NestMiddleware {
             }
 
             const user = await this.prisma.user.findFirst({
-                where: {
-                    telegramId: parseInt(telegramId as string),
-                },
+              where: {
+                telegramId: BigInt(telegramId as string),
+              },
             });
 
 
