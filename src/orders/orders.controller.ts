@@ -39,4 +39,10 @@ export class OrdersController {
         return this.ordersService.getPaymentConfirmed()
     }
 
+    @Get('admin/:id')
+    async adminGetById(@Param('id') id: string) {
+        const parsedId = parseInt(id, 10);
+        return this.ordersService.getById(parsedId)
+    }
+
 }

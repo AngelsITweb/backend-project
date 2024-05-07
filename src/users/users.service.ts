@@ -34,9 +34,9 @@ export class UsersService {
         return 'Вы успешно вошли';
     }
 
-    async setRole(telegramId: string, role: string): Promise<any> {
+    async setRole(userId: number, role: string): Promise<any> {
         const user = await this.prisma.user.findFirst({
-            where: { telegramId: BigInt(telegramId) } // Приводим к BigInt
+            where: { id: userId }
         });
         if (!user) {
             return 'Пользователь не найден';
@@ -55,7 +55,6 @@ export class UsersService {
     }
 
     async setNotifications(userId: number, brandsString: string): Promise<any> {
-        // Find the user
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
         });
@@ -64,10 +63,8 @@ export class UsersService {
             return 'Пользователь не найден';
         }
 
-        // Split the brandsString to get the array of brands
         const brandsArray = brandsString.split(",").map(brand => brand.trim());
 
-        // Create a list of valid notifications (use type checking if needed)
         const notifications = brandsArray.map(brand => {
             if (Brands[brand as keyof typeof Brands]) {
                 return Brands[brand as keyof typeof Brands];
@@ -76,21 +73,34 @@ export class UsersService {
             }
         }).filter(Boolean) as Brands[];
 
-        await this.prisma.user.delete({
+        await this.prisma.user.update({
             where: { id: user.id },
-        })
+            data: { notifications: { set: [] } },
+        });
 
         await this.prisma.user.update({
             where: { id: user.id },
-            data: { notifications: notifications }, // overwrite existing notifications
+            data: { notifications: { set: notifications } },
         });
 
         return 'Уведомления успешно обновлены';
     }
 
     async adminGetAll(): Promise<any> {
-        return this.prisma.user.findMany();
+        const users = await this.prisma.user.findMany();
+        return users.map((user) => ({
+          ...user,
+          telegramId: user.telegramId.toString(),
+        }));
     }
 
-
+    async adminGetById(userId: number): Promise<any> {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+        return {
+            ...user,
+            telegramId: user.telegramId.toString()
+        }
+    }
 }
