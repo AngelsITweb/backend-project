@@ -41,6 +41,10 @@ let OrdersController = class OrdersController {
     async getPaymentConfirmed() {
         return this.ordersService.getPaymentConfirmed();
     }
+    async adminGetById(id) {
+        const parsedId = parseInt(id, 10);
+        return this.ordersService.getById(parsedId);
+    }
 };
 exports.OrdersController = OrdersController;
 __decorate([
@@ -84,6 +88,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getPaymentConfirmed", null);
+__decorate([
+    (0, common_1.Get)('admin/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "adminGetById", null);
 exports.OrdersController = OrdersController = __decorate([
     (0, common_1.Controller)('orders'),
     __metadata("design:paramtypes", [orders_service_1.OrdersService])

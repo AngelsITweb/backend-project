@@ -8,13 +8,31 @@ export class RequestService {
     constructor(private readonly prisma: PrismaService ) {}
 
     async getAll(id: number) {
+        const userOrders = await this.prisma.order.findMany({
+            where: {
+                OR: [
+                    { buyerId: id },
+                    { sellerId: id }
+                ]
+            },
+            select: {
+                parts: {
+                    select: {
+                        id: true
+                    }
+                }
+            }
+        });
+
+        const partIdsInOrders = userOrders.flatMap(order => order.parts.map(part => part.id));
+
         return this.prisma.request.findMany({
             where: {
                 carId: id,
                 parts: {
-                    none: {
-                        cartId: {
-                            not: null
+                    every: {
+                        id: {
+                            notIn: partIdsInOrders
                         }
                     }
                 }
@@ -22,6 +40,14 @@ export class RequestService {
             include: {
                 parts: true
             }
+        });
+    }
+
+
+    async responded(id) {
+        return this.prisma.request.update({
+            where: { id },
+            data: { isResponseSent: true }
         });
     }
 
@@ -59,7 +85,8 @@ export class RequestService {
                 where: {
                     car: {
                         brand: brand as Brands
-                    }
+                    },
+                    isResponseSent: false
                 },
                 include: {
                     car: true

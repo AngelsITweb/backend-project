@@ -15,6 +15,7 @@ export declare class PartController {
         sellerId: number;
         carId: number;
         requestId: number;
+        orderId: number;
     }[]>;
     getById(body: any): Promise<{
         id: number;
@@ -29,6 +30,7 @@ export declare class PartController {
         sellerId: number;
         carId: number;
         requestId: number;
+        orderId: number;
     }>;
     createPart(body: any, userId: string): Promise<{
         id: number;
@@ -43,5 +45,6 @@ export declare class PartController {
         sellerId: number;
         carId: number;
         requestId: number;
+        orderId: number;
     }>;
 }

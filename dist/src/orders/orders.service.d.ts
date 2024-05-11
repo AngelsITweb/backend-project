@@ -3,27 +3,21 @@ export declare class OrdersService {
     private readonly prisma;
     constructor(prisma: PrismaService);
     getAll(id: number): Promise<({
-        cart: {
-            parts: {
-                id: number;
-                manufacturer: string;
-                numberOrName: string;
-                price: number;
-                new: boolean;
-                original: boolean;
-                name: string;
-                image: string;
-                cartId: number;
-                sellerId: number;
-                carId: number;
-                requestId: number;
-            }[];
-        } & {
+        parts: {
             id: number;
+            manufacturer: string;
+            numberOrName: string;
             price: number;
-            count: number;
-            userId: number;
-        };
+            new: boolean;
+            original: boolean;
+            name: string;
+            image: string;
+            cartId: number;
+            sellerId: number;
+            carId: number;
+            requestId: number;
+            orderId: number;
+        }[];
     } & {
         id: number;
         sellerId: number;
@@ -33,32 +27,25 @@ export declare class OrdersService {
         deliveryDate: Date;
         sentDate: Date;
         paymentScreenshot: string;
-        cartId: number;
         deliveryAddress: string;
         phoneNumber: string;
     })[]>;
     getById(id: number): Promise<{
-        cart: {
-            parts: {
-                id: number;
-                manufacturer: string;
-                numberOrName: string;
-                price: number;
-                new: boolean;
-                original: boolean;
-                name: string;
-                image: string;
-                cartId: number;
-                sellerId: number;
-                carId: number;
-                requestId: number;
-            }[];
-        } & {
+        parts: {
             id: number;
+            manufacturer: string;
+            numberOrName: string;
             price: number;
-            count: number;
-            userId: number;
-        };
+            new: boolean;
+            original: boolean;
+            name: string;
+            image: string;
+            cartId: number;
+            sellerId: number;
+            carId: number;
+            requestId: number;
+            orderId: number;
+        }[];
     } & {
         id: number;
         sellerId: number;
@@ -68,7 +55,6 @@ export declare class OrdersService {
         deliveryDate: Date;
         sentDate: Date;
         paymentScreenshot: string;
-        cartId: number;
         deliveryAddress: string;
         phoneNumber: string;
     }>;
@@ -81,7 +67,6 @@ export declare class OrdersService {
         deliveryDate: Date;
         sentDate: Date;
         paymentScreenshot: string;
-        cartId: number;
         deliveryAddress: string;
         phoneNumber: string;
     }>;
@@ -94,32 +79,25 @@ export declare class OrdersService {
         deliveryDate: Date;
         sentDate: Date;
         paymentScreenshot: string;
-        cartId: number;
         deliveryAddress: string;
         phoneNumber: string;
     }>;
     getPayedOrders(): Promise<({
-        cart: {
-            parts: {
-                id: number;
-                manufacturer: string;
-                numberOrName: string;
-                price: number;
-                new: boolean;
-                original: boolean;
-                name: string;
-                image: string;
-                cartId: number;
-                sellerId: number;
-                carId: number;
-                requestId: number;
-            }[];
-        } & {
+        parts: {
             id: number;
+            manufacturer: string;
+            numberOrName: string;
             price: number;
-            count: number;
-            userId: number;
-        };
+            new: boolean;
+            original: boolean;
+            name: string;
+            image: string;
+            cartId: number;
+            sellerId: number;
+            carId: number;
+            requestId: number;
+            orderId: number;
+        }[];
     } & {
         id: number;
         sellerId: number;
@@ -129,32 +107,25 @@ export declare class OrdersService {
         deliveryDate: Date;
         sentDate: Date;
         paymentScreenshot: string;
-        cartId: number;
         deliveryAddress: string;
         phoneNumber: string;
     })[]>;
     getPaymentConfirmed(): Promise<({
-        cart: {
-            parts: {
-                id: number;
-                manufacturer: string;
-                numberOrName: string;
-                price: number;
-                new: boolean;
-                original: boolean;
-                name: string;
-                image: string;
-                cartId: number;
-                sellerId: number;
-                carId: number;
-                requestId: number;
-            }[];
-        } & {
+        parts: {
             id: number;
+            manufacturer: string;
+            numberOrName: string;
             price: number;
-            count: number;
-            userId: number;
-        };
+            new: boolean;
+            original: boolean;
+            name: string;
+            image: string;
+            cartId: number;
+            sellerId: number;
+            carId: number;
+            requestId: number;
+            orderId: number;
+        }[];
     } & {
         id: number;
         sellerId: number;
@@ -164,7 +135,6 @@ export declare class OrdersService {
         deliveryDate: Date;
         sentDate: Date;
         paymentScreenshot: string;
-        cartId: number;
         deliveryAddress: string;
         phoneNumber: string;
     })[]>;

@@ -17,13 +17,29 @@ let RequestService = class RequestService {
         this.prisma = prisma;
     }
     async getAll(id) {
+        const userOrders = await this.prisma.order.findMany({
+            where: {
+                OR: [
+                    { buyerId: id },
+                    { sellerId: id }
+                ]
+            },
+            select: {
+                parts: {
+                    select: {
+                        id: true
+                    }
+                }
+            }
+        });
+        const partIdsInOrders = userOrders.flatMap(order => order.parts.map(part => part.id));
         return this.prisma.request.findMany({
             where: {
                 carId: id,
                 parts: {
-                    none: {
-                        cartId: {
-                            not: null
+                    every: {
+                        id: {
+                            notIn: partIdsInOrders
                         }
                     }
                 }
@@ -31,6 +47,12 @@ let RequestService = class RequestService {
             include: {
                 parts: true
             }
+        });
+    }
+    async responded(id) {
+        return this.prisma.request.update({
+            where: { id },
+            data: { isResponseSent: true }
         });
     }
     async getById(id) {
@@ -61,7 +83,8 @@ let RequestService = class RequestService {
                 where: {
                     car: {
                         brand: brand
-                    }
+                    },
+                    isResponseSent: false
                 },
                 include: {
                     car: true

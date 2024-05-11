@@ -18,26 +18,14 @@ let CartService = class CartService {
     }
     async getAll(userId) {
         const parsedUserId = parseInt(userId, 10);
-        const orders = await this.prisma.order.findMany({
-            where: {
-                buyerId: parsedUserId,
-            },
-            select: {
-                cartId: true,
-            },
-        });
-        const carts = await this.prisma.cart.findMany({
+        return this.prisma.cart.findMany({
             where: {
                 userId: parsedUserId,
-                id: {
-                    notIn: orders.map((order) => order.cartId),
-                },
             },
             include: {
                 parts: true,
             },
         });
-        return carts;
     }
     async getById(id) {
         return this.prisma.cart.findFirst({

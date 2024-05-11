@@ -16,6 +16,7 @@ export declare class RequestController {
             sellerId: number;
             carId: number;
             requestId: number;
+            orderId: number;
         }[];
     } & {
         id: number;
@@ -24,6 +25,7 @@ export declare class RequestController {
         carId: number;
         userId: number;
         sellerId: number;
+        isResponseSent: boolean;
     })[]>;
     getById(id: string): Promise<{
         car: {
@@ -41,6 +43,7 @@ export declare class RequestController {
         carId: number;
         userId: number;
         sellerId: number;
+        isResponseSent: boolean;
     }>;
     createRequest(body: any, userId: string): Promise<any>;
     getByNotifications(userId: string): Promise<({
@@ -59,5 +62,15 @@ export declare class RequestController {
         carId: number;
         userId: number;
         sellerId: number;
+        isResponseSent: boolean;
     })[][]>;
+    respondRequest(id: string): Promise<{
+        id: number;
+        name: string;
+        image: string;
+        carId: number;
+        userId: number;
+        sellerId: number;
+        isResponseSent: boolean;
+    }>;
 }

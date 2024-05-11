@@ -12,10 +12,12 @@ export declare class UsersController {
     }): Promise<any>;
     setRole(body: {
         role: string;
-    }, userId: string): Promise<any>;
+        userId: string;
+    }): Promise<any>;
     setNotifications(body: {
         brandsString: string;
         userId: string;
     }): Promise<any>;
     adminGetAll(): Promise<any>;
+    adminGetById(userId: string): Promise<any>;
 }

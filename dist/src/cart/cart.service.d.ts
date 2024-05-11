@@ -16,6 +16,7 @@ export declare class CartService {
             sellerId: number;
             carId: number;
             requestId: number;
+            orderId: number;
         }[];
     } & {
         id: number;
@@ -38,6 +39,7 @@ export declare class CartService {
             sellerId: number;
             carId: number;
             requestId: number;
+            orderId: number;
         }[];
     } & {
         id: number;
@@ -59,6 +61,7 @@ export declare class CartService {
             sellerId: number;
             carId: number;
             requestId: number;
+            orderId: number;
         }[];
     } & {
         id: number;

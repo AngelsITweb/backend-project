@@ -16,6 +16,7 @@ export declare class CartController {
             sellerId: number;
             carId: number;
             requestId: number;
+            orderId: number;
         }[];
     } & {
         id: number;
@@ -37,6 +38,7 @@ export declare class CartController {
             sellerId: number;
             carId: number;
             requestId: number;
+            orderId: number;
         }[];
     } & {
         id: number;
@@ -58,6 +60,7 @@ export declare class CartController {
             sellerId: number;
             carId: number;
             requestId: number;
+            orderId: number;
         }[];
     } & {
         id: number;

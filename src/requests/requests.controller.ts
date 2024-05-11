@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Post, Headers, UseInterceptors, UploadedFile} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, Headers, UseInterceptors, UploadedFile, Put} from '@nestjs/common';
 import {RequestService} from "./requests.service";
 import {FileInterceptor, MulterModule} from '@nestjs/platform-express';
 
@@ -36,8 +36,9 @@ export class RequestController {
         return this.requestsService.getByCarNotifications(parsedUserId);
     }
 
-    // @Post('/add-part')
-    // async addPartToRequest(
-    //     @Body() body: any,3
-    // )
+    @Put('/responded/:id')
+    async respondRequest( @Param('id') id: string) {
+        const parsedId = parseInt(id, 10);
+        return this.requestsService.responded(parsedId);
+    }
 }

@@ -25,11 +25,7 @@ let OrdersService = class OrdersService {
                 ]
             },
             include: {
-                cart: {
-                    include: {
-                        parts: true
-                    }
-                }
+                parts: true
             }
         });
     }
@@ -39,11 +35,7 @@ let OrdersService = class OrdersService {
                 id
             },
             include: {
-                cart: {
-                    include: {
-                        parts: true
-                    }
-                }
+                parts: true
             }
         });
     }
@@ -62,29 +54,37 @@ let OrdersService = class OrdersService {
             where: {
                 id: cartId
             },
-            select: {
-                price: true,
-                userId: true
+            include: {
+                parts: true
             }
         });
-        if (!cart) {
-            throw new Error('Корзина не найдена');
-        }
-        const sellerId = cart.userId;
-        if (typeof sellerId !== 'number') {
-            throw new Error('Некорректный идентификатор продавца');
-        }
-        return this.prisma.order.create({
+        console.log(cart, cartId);
+        const order = await this.prisma.order.create({
             data: {
                 buyerId,
-                sellerId,
+                sellerId: cart.parts[0].sellerId,
                 price: cart.price * 1.05,
-                cartId,
+                parts: {
+                    connect: cart.parts.map(part => ({ id: part.id }))
+                },
                 deliveryAddress,
                 phoneNumber,
                 paymentScreenshot: screenshot
             },
         });
+        await this.prisma.cart.update({
+            where: {
+                id: cartId
+            },
+            data: {
+                parts: {
+                    set: []
+                },
+                price: 0,
+                count: 0
+            }
+        });
+        return order;
     }
     async getPayedOrders() {
         return this.prisma.order.findMany({
@@ -92,11 +92,7 @@ let OrdersService = class OrdersService {
                 status: 'PAYED'
             },
             include: {
-                cart: {
-                    include: {
-                        parts: true
-                    }
-                }
+                parts: true
             }
         });
     }
@@ -106,11 +102,7 @@ let OrdersService = class OrdersService {
                 status: 'PAYMENT_CONFIRMED'
             },
             include: {
-                cart: {
-                    include: {
-                        parts: true
-                    }
-                }
+                parts: true
             }
         });
     }

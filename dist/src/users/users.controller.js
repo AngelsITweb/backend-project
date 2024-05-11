@@ -26,10 +26,10 @@ let UsersController = class UsersController {
         const { telegramId } = body;
         return await this.usersService.login(telegramId);
     }
-    async setRole(body, userId) {
-        const { role } = body;
+    async setRole(body) {
+        const { role, userId } = body;
         const parsedUserId = parseInt(userId, 10);
-        return await this.usersService.setRole(userId, role);
+        return await this.usersService.setRole(parsedUserId, role);
     }
     async setNotifications(body) {
         const parsedUserId = parseInt(body.userId, 10);
@@ -41,6 +41,10 @@ let UsersController = class UsersController {
             ...user,
             telegramId: user.telegramId.toString(),
         }));
+    }
+    async adminGetById(userId) {
+        const parsedUserId = parseInt(userId, 10);
+        return await this.usersService.adminGetById(parsedUserId);
     }
 };
 exports.UsersController = UsersController;
@@ -59,11 +63,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "login", null);
 __decorate([
-    (0, common_1.Post)('setRole'),
+    (0, common_1.Post)('admin/role'),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Headers)('user-id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "setRole", null);
 __decorate([
@@ -79,6 +82,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "adminGetAll", null);
+__decorate([
+    (0, common_1.Get)('admin/find/:userId'),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "adminGetById", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('/users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

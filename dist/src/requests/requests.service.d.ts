@@ -16,6 +16,7 @@ export declare class RequestService {
             sellerId: number;
             carId: number;
             requestId: number;
+            orderId: number;
         }[];
     } & {
         id: number;
@@ -24,7 +25,17 @@ export declare class RequestService {
         carId: number;
         userId: number;
         sellerId: number;
+        isResponseSent: boolean;
     })[]>;
+    responded(id: any): Promise<{
+        id: number;
+        name: string;
+        image: string;
+        carId: number;
+        userId: number;
+        sellerId: number;
+        isResponseSent: boolean;
+    }>;
     getById(id: number): Promise<{
         car: {
             id: number;
@@ -41,6 +52,7 @@ export declare class RequestService {
         carId: number;
         userId: number;
         sellerId: number;
+        isResponseSent: boolean;
     }>;
     createRequest({ userId, carId, name, image }: {
         userId: number;
@@ -64,5 +76,6 @@ export declare class RequestService {
         carId: number;
         userId: number;
         sellerId: number;
+        isResponseSent: boolean;
     })[][]>;
 }

@@ -1,6 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from "../../prisma/prisma.service";
 
+interface IPart {
+    id: number;
+    manufacturer: string;
+    numberOrName: string;
+    price: number;
+    image: string;
+    cartId: number | null;
+    sellerId: number;
+    carId: number;
+    name: string;
+    new : boolean;
+    original: boolean;
+}
 @Injectable()
 export class OrdersService {
     constructor(private readonly prisma: PrismaService ) {}
@@ -14,11 +27,7 @@ export class OrdersService {
                 ]
             },
             include: {
-                cart: {
-                    include: {
-                        parts: true
-                    }
-                }
+                parts: true
             }
         });
     }
@@ -29,11 +38,7 @@ export class OrdersService {
                 id
             },
             include: {
-                cart: {
-                    include: {
-                        parts: true
-                    }
-                }
+                parts: true
             }
         });
     }
@@ -49,38 +54,46 @@ export class OrdersService {
         })
     }
 
-    async createOrder(buyerId: number, cartId: number, deliveryAddress: string, phoneNumber: string, screenshot: string) {
+    async createOrder(buyerId: number, cartId: number , deliveryAddress: string, phoneNumber: string, screenshot: string) {
         const cart = await this.prisma.cart.findUnique({
             where: {
                 id: cartId
             },
-            select: {
-                price: true,
-                userId: true
+            include: {
+                parts: true
             }
-        });
+        })
 
-        if (!cart) {
-            throw new Error('Корзина не найдена');
-        }
+        console.log(cart, cartId)
 
-        const sellerId = cart.userId;
-
-        if (typeof sellerId !== 'number') {
-            throw new Error('Некорректный идентификатор продавца');
-        }
-
-        return this.prisma.order.create({
+        const order = await this.prisma.order.create({
             data: {
                 buyerId,
-                sellerId,
+                sellerId: cart.parts[0].sellerId,
                 price: cart.price * 1.05,
-                cartId,
+                parts: {
+                    connect: cart.parts.map(part => ({ id: part.id }))
+                },
                 deliveryAddress,
                 phoneNumber,
                 paymentScreenshot: screenshot
             },
         });
+
+        await this.prisma.cart.update({
+            where: {
+                id: cartId
+            },
+            data: {
+                parts: {
+                    set: []
+                },
+                price: 0,
+                count: 0
+            }
+        })
+
+        return order
     }
 
     async getPayedOrders() {
@@ -89,11 +102,7 @@ export class OrdersService {
                 status: 'PAYED'
             },
             include: {
-                cart: {
-                    include: {
-                        parts: true
-                    }
-                }
+                parts: true
             }
         })
     }
@@ -104,11 +113,7 @@ export class OrdersService {
                 status: 'PAYMENT_CONFIRMED'
             },
             include: {
-                cart: {
-                    include: {
-                        parts: true
-                    }
-                }
+                parts: true
             }
         })
     }
