@@ -20,12 +20,19 @@ let RequestService = class RequestService {
         const requests = await this.prisma.request.findMany({
             where: {
                 carId: carId,
-                parts: {
-                    some: {
-                        orderId: null,
-                        cartId: null
+                OR: [
+                    {
+                        parts: {
+                            some: {
+                                orderId: null,
+                                cartId: null
+                            }
+                        }
+                    },
+                    {
+                        isResponseSent: false
                     }
-                }
+                ]
             },
             include: {
                 parts: true,
