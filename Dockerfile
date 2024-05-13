@@ -16,6 +16,7 @@ RUN yarn install --ignore-engines
 RUN #yarn global add prisma
 RUN yarn prisma generate
 
+
 COPY --chown=user:user . .
 RUN npm run build
 CMD npm run start
