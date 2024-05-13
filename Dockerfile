@@ -13,6 +13,7 @@ COPY --chown=user:user ./package-lock.json ./package-lock.json
 RUN yarn install --ignore-engines
 RUN yarn global add prisma
 
+
 COPY --chown=user:user . .
 RUN npm run build
 CMD npm run start
