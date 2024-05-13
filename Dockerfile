@@ -16,6 +16,7 @@ COPY --chown=user:user prisma ./prisma
 RUN yarn install --ignore-engines
 RUN yarn global add prisma
 
+
 COPY --chown=user:user . .
 RUN npm run build
 CMD npm run start
