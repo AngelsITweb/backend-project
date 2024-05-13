@@ -2,7 +2,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 export declare class RequestService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    getAll(id: number): Promise<({
+    getAll(carId: number): Promise<({
         parts: {
             id: number;
             manufacturer: string;

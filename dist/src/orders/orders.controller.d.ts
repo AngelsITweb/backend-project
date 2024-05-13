@@ -3,7 +3,16 @@ export declare class OrdersController {
     private readonly ordersService;
     constructor(ordersService: OrdersService);
     getAll(userId: string): Promise<({
-        parts: {
+        parts: ({
+            car: {
+                id: number;
+                image: string;
+                brand: import(".prisma/client").$Enums.Brands;
+                model: string;
+                number: string;
+                ownerId: number;
+            };
+        } & {
             id: number;
             manufacturer: string;
             numberOrName: string;
@@ -17,7 +26,7 @@ export declare class OrdersController {
             carId: number;
             requestId: number;
             orderId: number;
-        }[];
+        })[];
     } & {
         id: number;
         sellerId: number;

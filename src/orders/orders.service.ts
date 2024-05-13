@@ -27,7 +27,11 @@ export class OrdersService {
                 ]
             },
             include: {
-                parts: true
+                parts: {
+                    include: {
+                        car: true
+                    }
+                }
             }
         });
     }

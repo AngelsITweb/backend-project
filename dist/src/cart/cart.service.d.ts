@@ -24,7 +24,6 @@ export declare class CartService {
         count: number;
         userId: number;
     })[]>;
-    21: any;
     getById(id: number): Promise<{
         parts: {
             id: number;

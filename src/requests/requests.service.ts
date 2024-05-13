@@ -7,41 +7,25 @@ import {Brands} from "@prisma/client";
 export class RequestService {
     constructor(private readonly prisma: PrismaService ) {}
 
-    async getAll(id: number) {
-        const userOrders = await this.prisma.order.findMany({
+    async getAll(carId: number) {
+        const requests = await this.prisma.request.findMany({
             where: {
-                OR: [
-                    { buyerId: id },
-                    { sellerId: id }
-                ]
-            },
-            select: {
+                carId: carId,
                 parts: {
-                    select: {
-                        id: true
-                    }
-                }
-            }
-        });
-
-        const partIdsInOrders = userOrders.flatMap(order => order.parts.map(part => part.id));
-
-        return this.prisma.request.findMany({
-            where: {
-                carId: id,
-                parts: {
-                    every: {
-                        id: {
-                            notIn: partIdsInOrders
-                        }
+                    some: {
+                        orderId: null,
+                        cartId: null
                     }
                 }
             },
             include: {
-                parts: true
+                parts: true,
             }
         });
+        return requests;
     }
+
+
 
 
     async responded(id) {

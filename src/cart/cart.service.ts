@@ -16,8 +16,7 @@ export class CartService {
           },
         });
       }
-      
-21
+
     async getById(id: number) {
         return this.prisma.cart.findFirst({
             where: {
