@@ -12,7 +12,7 @@ async function bootstrap() {
 
 
 	],
-	allowedHeaders: ["Telegram-Id", "User-Id"],
+	allowedHeaders: ["Telegram-Id", "User-Id", "Content-Type"],
 	credentials: true,
 	methods: ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE", "PATCH"],
   })
