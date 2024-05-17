@@ -8,20 +8,18 @@ export class AddUserIdMiddleware implements NestMiddleware {
 
     async use(req: Request, res: Response, next: NextFunction) {
         try {
+            const url = req.originalUrl;
+            const isImageRequest = url.startsWith('/api/uploads');
+            const isRegistration = url.includes('register');
+            const isAdmin = url.includes('admin');
+            const registrationRequest = req.headers['registration-request'];
+            if (isImageRequest || isRegistration || isAdmin || registrationRequest) {
+                return next();
+            }
             const telegramId = req.headers['telegram-id'];
 
             if (!telegramId) {
                 return res.status(408).json({ error: 'Telegram ID not provided in headers' });
-            }
-
-            const url = req.originalUrl;
-
-            const isImageRequest = url.startsWith('/api/uploads');
-            const isRegistration = url.endsWith('register');
-            const isAdmin = url.includes('admin');
-
-            if (isImageRequest || isRegistration || isAdmin) {
-                return next();
             }
 
             const user = await this.prisma.user.findFirst({
