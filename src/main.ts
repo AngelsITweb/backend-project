@@ -9,6 +9,7 @@ async function bootstrap() {
 	origin: [
 		`https://${process.env.DOMAIN}`,
 		`https://${process.env.FRONTEND_DOMAIN}`,
+		'https://admingarage-i7rs.vercel.app',
 
 
 	],
