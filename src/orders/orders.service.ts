@@ -14,6 +14,7 @@ interface IPart {
     new : boolean;
     original: boolean;
 }
+
 @Injectable()
 export class OrdersService {
     constructor(private readonly prisma: PrismaService ) {}
@@ -66,9 +67,15 @@ export class OrdersService {
             include: {
                 parts: true
             }
-        })
+        });
 
-        console.log(cart, cartId)
+        if (!cart) {
+            throw new Error(`Cart with id ${cartId} not found`);
+        }
+
+        if (!cart.parts || cart.parts.length === 0) {
+            throw new Error(`Cart with id ${cartId} has no parts`);
+        }
 
         const order = await this.prisma.order.create({
             data: {
@@ -95,9 +102,9 @@ export class OrdersService {
                 price: 0,
                 count: 0
             }
-        })
+        });
 
-        return order
+        return order;
     }
 
     async getPayedOrders() {
@@ -108,7 +115,7 @@ export class OrdersService {
             include: {
                 parts: true
             }
-        })
+        });
     }
 
     async getPaymentConfirmed() {
@@ -119,6 +126,6 @@ export class OrdersService {
             include: {
                 parts: true
             }
-        })
+        });
     }
 }
