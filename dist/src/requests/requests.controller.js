@@ -37,9 +37,10 @@ let RequestController = class RequestController {
         const parsedUserId = parseInt(userId, 10);
         return this.requestsService.getByCarNotifications(parsedUserId);
     }
-    async respondRequest(id) {
+    async respondRequest(id, userId) {
         const parsedId = parseInt(id, 10);
-        return this.requestsService.responded(parsedId);
+        const parsedUserId = parseInt(userId, 10);
+        return this.requestsService.responded(parsedId, parsedUserId);
     }
 };
 exports.RequestController = RequestController;
@@ -75,8 +76,9 @@ __decorate([
 __decorate([
     (0, common_1.Put)('/responded/:id'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Headers)('user-id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], RequestController.prototype, "respondRequest", null);
 exports.RequestController = RequestController = __decorate([

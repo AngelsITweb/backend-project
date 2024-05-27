@@ -8,7 +8,7 @@ export class RequestController {
     constructor(private readonly requestsService: RequestService ) {}
 
     @Get('all/:id')
-    getAll(@Param('id') id: string) {
+    getAll(@Param('id')id: string) {
         const parsedId = parseInt(id, 10);
         return this.requestsService.getAll(parsedId);
     }
@@ -37,8 +37,9 @@ export class RequestController {
     }
 
     @Put('/responded/:id')
-    async respondRequest( @Param('id') id: string) {
+    async respondRequest( @Param('id') id: string, @Headers('user-id') userId: string) {
         const parsedId = parseInt(id, 10);
-        return this.requestsService.responded(parsedId);
+        const parsedUserId = parseInt(userId, 10);
+        return this.requestsService.responded(parsedId, parsedUserId);
     }
 }

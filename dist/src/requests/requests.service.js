@@ -22,30 +22,33 @@ let RequestService = class RequestService {
         const requests = await this.prisma.request.findMany({
             where: {
                 carId: carId,
-                OR: [
-                    {
-                        parts: {
-                            some: {
-                                orderId: null,
-                                cartId: null
-                            }
-                        }
-                    },
-                    {
-                        isResponseSent: false
+                NOT: {
+                    respondedSellerIds: {
+                        has: 0
                     }
-                ]
+                }
             },
             include: {
-                parts: true,
+                parts: {
+                    where: {
+                        AND: [
+                            { orderId: null },
+                            { cartId: null }
+                        ]
+                    }
+                }
             }
         });
         return requests;
     }
-    async responded(id) {
+    async responded(id, userId) {
         const request = await this.prisma.request.update({
             where: { id },
-            data: { isResponseSent: true }
+            data: {
+                respondedSellerIds: {
+                    push: userId
+                }
+            }
         });
         const user = await this.prisma.user.findUnique({ where: { id: request.userId } });
         const car = await this.prisma.car.findUnique({ where: { id: request.carId } });
@@ -67,7 +70,8 @@ let RequestService = class RequestService {
             },
             user: {
                 connect: { id: userId }
-            }
+            },
+            respondedSellerIds: [0],
         };
         const car = await this.prisma.car.findUnique({ where: { id: carId } });
         const sellersWithNotifications = await this.prisma.user.findMany({
@@ -79,7 +83,6 @@ let RequestService = class RequestService {
         });
         const sendMessagePromises = sellersWithNotifications.map(async (user) => {
             const message = `Новая заявка на деталь на машину ${car.brand}`;
-            await this.botService.sendMessage(user.telegramId, message, 'https://mygarage-webapp-1wvpi27e8-ceos-projects-828a268d.vercel.app/seller-panel/seller-actual-orders');
         });
         await Promise.all(sendMessagePromises);
         const user = await this.prisma.user.findUnique({
@@ -97,14 +100,19 @@ let RequestService = class RequestService {
                     car: {
                         brand: brand
                     },
-                    isResponseSent: false
+                    NOT: {
+                        respondedSellerIds: {
+                            has: userId
+                        }
+                    }
                 },
                 include: {
                     car: true
                 }
             });
         });
-        return Promise.all(requestsPromises);
+        const requestsArrays = await Promise.all(requestsPromises);
+        return requestsArrays.flat();
     }
 };
 exports.RequestService = RequestService;

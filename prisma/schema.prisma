@@ -117,16 +117,16 @@ model Order {
 }
 
 model Request {
-  id             Int     @id @default(autoincrement())
-  name           String
-  image          String?
-  car            Car     @relation(fields: [carId], references: [id])
-  carId          Int
-  parts          Part[]
-  user           User    @relation(fields: [userId], references: [id])
-  userId         Int
-  sellerId       Int?
-  isResponseSent Boolean @default(false)
+  id                 Int     @id @default(autoincrement())
+  name               String
+  image              String?
+  car                Car     @relation(fields: [carId], references: [id])
+  carId              Int
+  parts              Part[]
+  user               User    @relation(fields: [userId], references: [id])
+  userId             Int
+  sellerId           Int?
+  respondedSellerIds Int[]
 
   @@index([carId, userId], name: "unique_request")
 }
