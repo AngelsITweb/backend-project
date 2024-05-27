@@ -1,7 +1,9 @@
 import { PrismaService } from "../../prisma/prisma.service";
+import { BotService } from "../bot/bot.service";
 export declare class RequestService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly botService;
+    constructor(prisma: PrismaService, botService: BotService);
     getAll(carId: number): Promise<({
         parts: {
             id: number;
@@ -27,15 +29,7 @@ export declare class RequestService {
         sellerId: number;
         isResponseSent: boolean;
     })[]>;
-    responded(id: any): Promise<{
-        id: number;
-        name: string;
-        image: string;
-        carId: number;
-        userId: number;
-        sellerId: number;
-        isResponseSent: boolean;
-    }>;
+    responded(id: any): Promise<void>;
     getById(id: number): Promise<{
         car: {
             id: number;

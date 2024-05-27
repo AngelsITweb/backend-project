@@ -62,7 +62,12 @@ let OrdersService = class OrdersService {
                 parts: true
             }
         });
-        console.log(cart, cartId);
+        if (!cart) {
+            throw new Error(`Cart with id ${cartId} not found`);
+        }
+        if (!cart.parts || cart.parts.length === 0) {
+            throw new Error(`Cart with id ${cartId} has no parts`);
+        }
         const order = await this.prisma.order.create({
             data: {
                 buyerId,

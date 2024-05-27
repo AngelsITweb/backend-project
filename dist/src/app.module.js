@@ -21,6 +21,8 @@ const orders_module_1 = require("./orders/orders.module");
 const TelegramIdToUserId_1 = require("./middlewares/TelegramIdToUserId");
 const platform_express_1 = require("@nestjs/platform-express");
 const image_module_1 = require("./image/image.module");
+const bot_service_1 = require("./bot/bot.service");
+const bot_module_1 = require("./bot/bot.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -32,7 +34,7 @@ let AppModule = class AppModule {
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        providers: [prisma_service_1.PrismaService],
+        providers: [prisma_service_1.PrismaService, bot_service_1.BotService],
         controllers: [users_controller_1.UsersController],
         imports: [
             users_module_1.UsersModule, cars_module_1.CarsModule, requests_module_1.RequestModule, cart_module_1.CartModule, part_module_1.PartModule, orders_module_1.OrdersModule,
@@ -43,7 +45,8 @@ exports.AppModule = AppModule = __decorate([
                 rootPath: (0, path_1.join)(__dirname, '..', '..', 'uploads'),
                 serveRoot: '/uploads',
             }),
-            image_module_1.ImageModule
+            image_module_1.ImageModule,
+            bot_module_1.BotModule
         ],
     })
 ], AppModule);

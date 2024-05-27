@@ -64,13 +64,5 @@ export declare class RequestController {
         sellerId: number;
         isResponseSent: boolean;
     })[][]>;
-    respondRequest(id: string): Promise<{
-        id: number;
-        name: string;
-        image: string;
-        carId: number;
-        userId: number;
-        sellerId: number;
-        isResponseSent: boolean;
-    }>;
+    respondRequest(id: string): Promise<void>;
 }

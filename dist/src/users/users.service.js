@@ -22,14 +22,14 @@ let UsersService = class UsersService {
             where: { telegramId: BigInt(telegramId) }
         });
         if (foundUser) {
-            return 'Пользователь уже зарегистрирован с айди' + foundUser.telegramId;
+            return 'Пользователь уже зарегистрирован с айди ' + foundUser.telegramId.toString();
         }
         else {
             const user = await this.prisma.user.create({
                 data: {
                     telegramId: BigInt(telegramId),
                     nickname,
-                    username,
+                    username: username || null,
                 }
             });
             return { username: user.username, nickname: user.nickname, telegramId: user.telegramId.toString() };
@@ -51,7 +51,7 @@ let UsersService = class UsersService {
         if (!user) {
             return 'Пользователь не найден';
         }
-        if (!(role in client_1.Roles)) {
+        if (!Object.values(client_1.Roles).includes(role)) {
             return 'Некорректная роль';
         }
         const updatedUser = await this.prisma.user.update({
@@ -67,19 +67,13 @@ let UsersService = class UsersService {
         if (!user) {
             return 'Пользователь не найден';
         }
-        const brandsArray = brandsString.split(",").map(brand => brand.trim());
+        const brandsArray = brandsString.split(',').map(brand => brand.trim());
         const notifications = brandsArray.map(brand => {
-            if (client_1.Brands[brand]) {
-                return client_1.Brands[brand];
-            }
-            else {
-                return null;
-            }
+            return client_1.Brands[brand] || null;
         }).filter(Boolean);
-        await this.prisma.user.update({
-            where: { id: user.id },
-            data: { notifications: { set: [] } },
-        });
+        if (notifications.length === 0) {
+            return 'Некорректные бренды';
+        }
         await this.prisma.user.update({
             where: { id: user.id },
             data: { notifications: { set: notifications } },
@@ -88,15 +82,18 @@ let UsersService = class UsersService {
     }
     async adminGetAll() {
         const users = await this.prisma.user.findMany();
-        return users.map((user) => ({
+        return users.map(user => ({
             ...user,
-            telegramId: user.telegramId.toString(),
+            telegramId: user.telegramId.toString()
         }));
     }
     async adminGetById(userId) {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
         });
+        if (!user) {
+            return 'Пользователь не найден';
+        }
         return {
             ...user,
             telegramId: user.telegramId.toString()

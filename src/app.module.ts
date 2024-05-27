@@ -12,9 +12,11 @@ import { OrdersModule } from './orders/orders.module';
 import { AddUserIdMiddleware } from "./middlewares/TelegramIdToUserId";
 import { MulterModule } from "@nestjs/platform-express";
 import { ImageModule } from './image/image.module';
+import { BotService } from './bot/bot.service';
+import { BotModule } from './bot/bot.module';
 
 @Module({
-    providers: [PrismaService],
+    providers: [PrismaService, BotService],
     controllers: [UsersController],
     imports: [
         UsersModule, CarsModule, RequestModule, CartModule, PartModule, OrdersModule,
@@ -25,7 +27,8 @@ import { ImageModule } from './image/image.module';
             rootPath: join(__dirname, '..', '..', 'uploads'),
             serveRoot: '/uploads',
         }),
-        ImageModule
+        ImageModule,
+        BotModule
     ],
 
 })
