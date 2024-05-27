@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Post, Headers, Param} from '@nestjs/common';
+import {Body, Controller, Get, Post, Headers, Param, Delete} from '@nestjs/common';
 import {CartService} from "./cart.service";
 
 @Controller('cart')
@@ -20,5 +20,12 @@ export class CartController {
     createCart(@Body() body: any, @Headers('user-id') userId: string) {
         const parsedUserId = parseInt(userId, 10);
         return this.cartService.createCart(parsedUserId, body.partId);
+    }
+
+    @Delete('/part/:id')
+    deletePart(@Param('id') id: string, @Headers('user-id') userId: string) {
+        const partId = parseInt(id, 10);
+        const parsedUserId = parseInt(userId, 10);
+        return this.cartService.deletePart(partId, parsedUserId);
     }
 }

@@ -74,4 +74,26 @@ export declare class CartService {
         count: number;
         userId: number;
     }>;
+    deletePart(partId: number, userId: number): Promise<{
+        parts: {
+            id: number;
+            manufacturer: string;
+            numberOrName: string;
+            price: number;
+            new: boolean;
+            original: boolean;
+            name: string;
+            image: string;
+            cartId: number;
+            sellerId: number;
+            carId: number;
+            requestId: number;
+            orderId: number;
+        }[];
+    } & {
+        id: number;
+        price: number;
+        count: number;
+        userId: number;
+    }>;
 }

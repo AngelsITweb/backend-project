@@ -68,4 +68,26 @@ export declare class CartController {
         count: number;
         userId: number;
     }>;
+    deletePart(id: string, userId: string): Promise<{
+        parts: {
+            id: number;
+            manufacturer: string;
+            numberOrName: string;
+            price: number;
+            new: boolean;
+            original: boolean;
+            name: string;
+            image: string;
+            cartId: number;
+            sellerId: number;
+            carId: number;
+            requestId: number;
+            orderId: number;
+        }[];
+    } & {
+        id: number;
+        price: number;
+        count: number;
+        userId: number;
+    }>;
 }

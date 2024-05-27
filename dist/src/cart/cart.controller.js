@@ -30,6 +30,11 @@ let CartController = class CartController {
         const parsedUserId = parseInt(userId, 10);
         return this.cartService.createCart(parsedUserId, body.partId);
     }
+    deletePart(id, userId) {
+        const partId = parseInt(id, 10);
+        const parsedUserId = parseInt(userId, 10);
+        return this.cartService.deletePart(partId, parsedUserId);
+    }
 };
 exports.CartController = CartController;
 __decorate([
@@ -54,6 +59,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], CartController.prototype, "createCart", null);
+__decorate([
+    (0, common_1.Delete)('/part/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Headers)('user-id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], CartController.prototype, "deletePart", null);
 exports.CartController = CartController = __decorate([
     (0, common_1.Controller)('cart'),
     __metadata("design:paramtypes", [cart_service_1.CartService])
