@@ -1,7 +1,9 @@
 import { PrismaService } from "../../prisma/prisma.service";
+import { BotService } from "../bot/bot.service";
 export declare class OrdersService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly botService;
+    constructor(prisma: PrismaService, botService: BotService);
     getAll(id: number): Promise<({
         parts: ({
             car: {

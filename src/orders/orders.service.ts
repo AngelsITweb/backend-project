@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from "../../prisma/prisma.service";
+import {BotService} from "../bot/bot.service";
 
 interface IPart {
     id: number;
@@ -17,7 +18,7 @@ interface IPart {
 
 @Injectable()
 export class OrdersService {
-    constructor(private readonly prisma: PrismaService ) {}
+    constructor(private readonly prisma: PrismaService, private readonly botService: BotService ) {}
 
     async getAll(id: number) {
         return this.prisma.order.findMany({
@@ -104,6 +105,17 @@ export class OrdersService {
             }
         });
 
+        const managers = await this.prisma.user.findMany({
+            where: {
+                role: 'Manager'
+            }
+        });
+
+        const message = `Новый заказ на ${cart.parts.length} деталей`;
+        const promises = managers.map(async (manager) => {
+            await this.botService.sendMessage(manager.telegramId, message, 'https://mygarage-webapp-nawq6gs1x-ceos-projects-828a268d.vercel.app/manager/actual-orders');
+        });
+        await Promise.all(promises);
         return order;
     }
 

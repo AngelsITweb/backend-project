@@ -12,11 +12,6 @@ export class RequestService {
         const requests = await this.prisma.request.findMany({
             where: {
                 carId: carId,
-                NOT: {
-                    respondedSellerIds: {
-                        has: 0
-                    }
-                }
             },
             include: {
                 parts: {

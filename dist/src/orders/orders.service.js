@@ -12,9 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const bot_service_1 = require("../bot/bot.service");
 let OrdersService = class OrdersService {
-    constructor(prisma) {
+    constructor(prisma, botService) {
         this.prisma = prisma;
+        this.botService = botService;
     }
     async getAll(id) {
         return this.prisma.order.findMany({
@@ -93,6 +95,16 @@ let OrdersService = class OrdersService {
                 count: 0
             }
         });
+        const managers = await this.prisma.user.findMany({
+            where: {
+                role: 'Manager'
+            }
+        });
+        const message = `Новый заказ на ${cart.parts.length} деталей`;
+        const promises = managers.map(async (manager) => {
+            await this.botService.sendMessage(manager.telegramId, message, 'https://mygarage-webapp-nawq6gs1x-ceos-projects-828a268d.vercel.app/manager/actual-orders');
+        });
+        await Promise.all(promises);
         return order;
     }
     async getPayedOrders() {
@@ -119,6 +131,6 @@ let OrdersService = class OrdersService {
 exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService, bot_service_1.BotService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map
