@@ -94,6 +94,22 @@ let CartService = class CartService {
             }
         });
     }
+    async deletePart(partId, userId) {
+        const cart = await this.prisma.cart.update({
+            where: { userId },
+            data: {
+                parts: {
+                    disconnect: { id: partId }
+                },
+                count: { decrement: 1 },
+                price: { decrement: (await this.prisma.part.findUnique({ where: { id: partId } })).price },
+            },
+            include: {
+                parts: true,
+            },
+        });
+        return cart;
+    }
 };
 exports.CartService = CartService;
 exports.CartService = CartService = __decorate([
