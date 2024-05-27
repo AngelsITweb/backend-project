@@ -10,7 +10,7 @@ async function bootstrap() {
 		`https://${process.env.DOMAIN}`,
 		`https://${process.env.FRONTEND_DOMAIN}`,
 		'https://admingarage-i7rs.vercel.app',
-		'http://localhost:5173',
+		// 'http://localhost:5173',
 	],
 	allowedHeaders: ["Telegram-Id", "User-Id", "Content-Type"],
 	credentials: true,
