@@ -11,15 +11,15 @@ USER user
 COPY --chown=user:user ./package.json ./package.json
 COPY --chown=user:user ./package-lock.json ./package-lock.json
 COPY --chown=user:user prisma ./prisma
-COPY --chown=user:user ./prisma/migrations ./prisma/migrations
+
 
 RUN yarn install --ignore-engines
 RUN yarn global add prisma
-RUN npx prisma migrate deploy
+
 
 COPY --chown=user:user . .
 RUN npm run build
-CMD ["node", "dist/main"]
+CMD npm run start
 
 FROM build as clearing
 RUN rm -rf .env
