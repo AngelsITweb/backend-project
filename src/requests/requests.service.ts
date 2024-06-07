@@ -12,6 +12,11 @@ export class RequestService {
         const requests = await this.prisma.request.findMany({
             where: {
                 carId: carId,
+                parts: {
+                    every: {
+                        orderId: null
+                    }
+                }
             },
             include: {
                 parts: {
