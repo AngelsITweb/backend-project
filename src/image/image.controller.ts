@@ -9,12 +9,28 @@ export class ImageController {
     @Post('')
     @UseInterceptors(FileInterceptor('image'))
     async uploadImage(@UploadedFile() image: any): Promise<any> {
-        if (!image) {
-            // Передаем null в сервис, если файл не был загружен
-            return await this.imageService.uploadImage(null);
-        }
+        // Передаем файл или null в сервис
+        const imageUrl = await this.imageService.uploadImage(image);
 
-        // Если файл был загружен, передаем его в сервис
-        return await this.imageService.uploadImage(image);
+        // Пример создания записи в базе данных
+        // return await this.prisma.request.create({
+        //     data: {
+        //         name: "Пол",
+        //         image: imageUrl,
+        //         car: {
+        //             connect: {
+        //                 id: 1
+        //             }
+        //         },
+        //         user: {
+        //             connect: {
+        //                 id: 1
+        //             }
+        //         },
+        //         respondedSellerIds: [0]
+        //     }
+        // });
+
+        return { imageUrl };
     }
 }
