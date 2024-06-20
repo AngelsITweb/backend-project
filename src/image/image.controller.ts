@@ -10,13 +10,11 @@ export class ImageController {
     @UseInterceptors(FileInterceptor('image'))
     async uploadImage(@UploadedFile() image: any): Promise<any> {
         if (!image) {
-            // Возвращаем сообщение, что файл не был загружен, но это не обязательно
-            return {
-                message: 'Файл не был загружен, но это не обязательно.',
-            };
+            // Передаем null в сервис, если файл не был загружен
+            return await this.imageService.uploadImage(null);
         }
 
-        // Если файл был загружен, обрабатываем его с помощью imageService
+        // Если файл был загружен, передаем его в сервис
         return await this.imageService.uploadImage(image);
     }
 }
