@@ -16,8 +16,19 @@ export class PartController {
     }
 
     @Post('')
-    async createPart(@Body() body: any, @Headers('user-id') userId: string) {
-        const parsedUserId = parseInt(userId, 10);  3
-        return this.partService.createPart(body.requestId, body.name, body.new, body.original, body.manufacturer, body.numberOrName, body.price, body.image, parsedUserId, body.carId)
-    }
+  async createPart(@Body() body: any, @Headers('user-id') userId: string) {
+    const parsedUserId = parseInt(userId, 10);
+    return this.partService.createPart(
+      body.requestId,
+      body.name,
+      body.new,
+      body.original,
+      body.manufacturer,
+      body.numberOrName,
+      body.price,
+      body.image, // Теперь это необязательное поле
+      parsedUserId,
+      body.carId
+    )
+  }
 }
