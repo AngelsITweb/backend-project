@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from "../../prisma/prisma.service";
 import { BotService } from "../bot/bot.service";
 
@@ -7,7 +7,7 @@ interface IPart {
   manufacturer: string;
   numberOrName: string;
   price: number;
-  image?: string; // Сделали необязательным
+  image?: string;
   cartId: number | null;
   sellerId: number;
   carId: number;
@@ -18,7 +18,10 @@ interface IPart {
 
 @Injectable()
 export class OrdersService {
-    constructor(private readonly prisma: PrismaService, private readonly botService: BotService ) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly botService: BotService
+    ) {}
 
     async getAll(id: number) {
         return this.prisma.order.findMany({
@@ -39,43 +42,37 @@ export class OrdersService {
     }
 
     async getById(id: number) {
-        return this.prisma.order.findUnique({
-            where: {
-                id
-            },
-            include: {
-                parts: true
-            }
+        const order = await this.prisma.order.findUnique({
+            where: { id },
+            include: { parts: true }
         });
+
+        if (!order) {
+            throw new NotFoundException(`Order with ID ${id} not found`);
+        }
+
+        return order;
     }
 
     async updateStatus(id: number, status: string) {
         return this.prisma.order.update({
-            where: {
-                id
-            },
-            data: {
-                status: status as any
-            }
-        })
+            where: { id },
+            data: { status: status as any }
+        });
     }
 
-    async createOrder(buyerId: number, cartId: number , deliveryAddress: string, phoneNumber: string, screenshot: string) {
+    async createOrder(buyerId: number, cartId: number, deliveryAddress: string, phoneNumber: string, screenshot?: string) {
         const cart = await this.prisma.cart.findUnique({
-            where: {
-                id: cartId
-            },
-            include: {
-                parts: true
-            }
+            where: { id: cartId },
+            include: { parts: true }
         });
 
         if (!cart) {
-            throw new Error(`Cart with id ${cartId} not found`);
+            throw new NotFoundException(`Cart with id ${cartId} not found`);
         }
 
         if (!cart.parts || cart.parts.length === 0) {
-            throw new Error(`Cart with id ${cartId} has no parts`);
+            throw new BadRequestException(`Cart with id ${cartId} has no parts`);
         }
 
         const order = await this.prisma.order.create({
@@ -88,56 +85,43 @@ export class OrdersService {
                 },
                 deliveryAddress,
                 phoneNumber,
-                paymentScreenshot: screenshot
+                paymentScreenshot: screenshot || null
             },
         });
 
         await this.prisma.cart.update({
-            where: {
-                id: cartId
-            },
+            where: { id: cartId },
             data: {
-                parts: {
-                    set: []
-                },
+                parts: { set: [] },
                 price: 0,
                 count: 0
             }
         });
 
         const managers = await this.prisma.user.findMany({
-            where: {
-                role: 'Manager'
-            }
+            where: { role: 'Manager' }
         });
 
         const message = `Новый заказ на ${cart.parts.length} деталей`;
-        const promises = managers.map(async (manager) => {
-            await this.botService.sendMessage(manager.telegramId, message, 'https://mygarage-webapp.vercel.app/manager/actual-orders');
-        });
+        const promises = managers.map(manager => 
+            this.botService.sendMessage(manager.telegramId, message, 'https://mygarage-webapp.vercel.app/manager/actual-orders')
+        );
         await Promise.all(promises);
+
         return order;
     }
 
     async getPayedOrders() {
         return this.prisma.order.findMany({
-            where: {
-                status: 'PAYED'
-            },
-            include: {
-                parts: true
-            }
+            where: { status: 'PAYED' },
+            include: { parts: true }
         });
     }
 
     async getPaymentConfirmed() {
         return this.prisma.order.findMany({
-            where: {
-                status: 'PAYMENT_CONFIRMED'
-            },
-            include: {
-                parts: true
-            }
+            where: { status: 'PAYMENT_CONFIRMED' },
+            include: { parts: true }
         });
     }
 }
