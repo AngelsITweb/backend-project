@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from "../../prisma/prisma.service";
-import {BotService} from "../bot/bot.service";
+import { BotService } from "../bot/bot.service";
 
 interface IPart {
-    id: number;
-    manufacturer: string;
-    numberOrName: string;
-    price: number;
-    image: string;
-    cartId: number | null;
-    sellerId: number;
-    carId: number;
-    name: string;
-    new : boolean;
-    original: boolean;
+  id: number;
+  manufacturer: string;
+  numberOrName: string;
+  price: number;
+  image?: string; // Сделали необязательным
+  cartId: number | null;
+  sellerId: number;
+  carId: number;
+  name: string;
+  new: boolean;
+  original: boolean;
 }
 
 @Injectable()
