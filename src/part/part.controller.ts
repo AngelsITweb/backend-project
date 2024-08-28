@@ -16,7 +16,7 @@ export class PartController {
     }
 
     @Post('')
-  async createPart(@Body() body: any, @Headers('user-id') userId: string) {
+    async createPart(@Body() body: any, @Headers('user-id') userId: string) {
     const parsedUserId = parseInt(userId, 10);
     return this.partService.createPart(
       body.requestId,
