@@ -58,18 +58,18 @@ export class RequestService {
     }
 
 
-    async createRequest({ userId, carId, name, image }: { userId: number; carId: number; name: string; image: string }): Promise<any> {
-        const data = {
-            name,
-            image,
-            car: {
-                connect: { id: carId }
-            },
-            user: {
-                connect: { id: userId }
-            },
-            respondedSellerIds: [0],
-        };
+    async createRequest({ userId, carId, name, image }: { userId: number; carId: number; name: string; image?: string }): Promise<any> {
+    const data = {
+      name,
+      image: image || null,
+      car: {
+        connect: { id: carId }
+      },
+      user: {
+        connect: { id: userId }
+      },
+      respondedSellerIds: [0],
+    };
         const car = await this.prisma.car.findUnique({ where: { id: carId } });
         const sellersWithNotifications = await this.prisma.user.findMany({
             where: {
